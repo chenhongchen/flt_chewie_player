@@ -55,12 +55,18 @@ class _PlayerExampleState extends State<PlayerExample> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = width * 3 / 4;
     return Scaffold(
       appBar: AppBar(
         title: const Text('PlayerExample'),
       ),
       body: Center(
         child: FltChewiePlayer(
+          width: width,
+          height: height,
+          snapshotMode: SnapshotMode.scaleAspectFill,
+          snapshot: true,
           zoomInWidget: _buildZoomInWidget(),
           controller: _chewieController,
           showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
@@ -77,14 +83,14 @@ class _PlayerExampleState extends State<PlayerExample> {
 
   _buildZoomInWidget() {
     double width = MediaQuery.of(context).size.width;
-    double height = width * 9 / 16.0;
+    double height = width * 3 / 4;
     double btnH = height / 3.0;
     return Stack(
       children: <Widget>[
         Container(
           width: width,
           height: height,
-          color: Colors.grey,
+          color: Colors.black.withOpacity(0.3),
         ),
         Positioned(
           left: 0,
@@ -97,7 +103,7 @@ class _PlayerExampleState extends State<PlayerExample> {
               _startPlay();
             },
             child: Container(
-              color: Colors.red,
+              color: Colors.red.withOpacity(0.1),
               alignment: Alignment.center,
               child: Text('无最小窗口全屏播放'),
             ),
@@ -114,7 +120,7 @@ class _PlayerExampleState extends State<PlayerExample> {
               _startPlay();
             },
             child: Container(
-              color: Colors.orange,
+              color: Colors.orange.withOpacity(0.1),
               alignment: Alignment.center,
               child: Text('有小窗口，初始全屏播放'),
             ),
@@ -131,7 +137,7 @@ class _PlayerExampleState extends State<PlayerExample> {
               _startPlay(defFullScreen: false);
             },
             child: Container(
-              color: Colors.blue,
+              color: Colors.blue.withOpacity(0.1),
               alignment: Alignment.center,
               child: Text('有小窗口，初始小窗播放'),
             ),
@@ -145,10 +151,11 @@ class _PlayerExampleState extends State<PlayerExample> {
     if (_videoPlayerController == null) {
       _videoPlayerController = VideoPlayerController.network(
           'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4');
+      await _videoPlayerController.initialize();
     }
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
-      aspectRatio: 3 / 2,
+      aspectRatio: _videoPlayerController.value.aspectRatio,
       autoPlay: true,
       looping: true,
     );
