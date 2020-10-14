@@ -1,6 +1,5 @@
 export 'package:video_player/video_player.dart';
 export 'package:chewie/chewie.dart';
-import 'dart:async';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
@@ -129,6 +128,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
     return Container(
       width: widget.width,
       height: widget.height,
+      color: Colors.black,
       child: _buildContent(),
     );
   }
@@ -208,7 +208,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
         left = -widget.height * aspectRatio * 0.5;
         right = left;
       } else {
-        top = -widget.width * aspectRatio * 0.5;
+        top = -widget.width / aspectRatio * 0.5;
         bottom = top;
       }
     }
