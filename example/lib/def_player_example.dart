@@ -19,6 +19,12 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = width * 3 / 4;

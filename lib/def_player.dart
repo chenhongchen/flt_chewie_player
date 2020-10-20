@@ -34,6 +34,7 @@ class DefPlayer extends StatefulWidget {
   final double height;
   final Widget zoomInWidget;
   final TextStyle errorTextStyle;
+  final bool smallPlayBtn;
   DefPlayer({
     Key key,
     this.controller,
@@ -41,6 +42,7 @@ class DefPlayer extends StatefulWidget {
     this.height,
     this.zoomInWidget,
     this.errorTextStyle,
+    this.smallPlayBtn = false,
   }) : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -120,7 +122,9 @@ class _DefPlayerState extends State<DefPlayer> {
                   child: Center(
                     child: Container(
                       child: Image.asset(
-                        'images/play.png',
+                        widget.smallPlayBtn
+                            ? 'images/small_play.png'
+                            : 'images/play.png',
                         package: 'flt_chewie_player',
                       ),
                     ),
