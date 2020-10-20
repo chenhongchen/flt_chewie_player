@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flt_chewie_player/flt_chewie_player.dart';
-import 'package:flutter/scheduler.dart';
+import 'def_player_example.dart';
 
 void main() {
   runApp(MaterialApp(home: MyApp(), routes: <String, WidgetBuilder>{
     "PlayerExample": (BuildContext context) => new PlayerExample(),
+    "DefPlayerExample": (BuildContext context) => new DefPlayerExample(),
   }));
 }
 
@@ -13,19 +14,39 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed("PlayerExample");
-        },
-        child: Center(
-          child: Container(
-            width: 100,
-            height: 50,
-            child: Text('跳转页面',
-                style: TextStyle(
-                  color: Colors.black,
-                )),
-          ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("PlayerExample");
+              },
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: Text('跳转PlayerExample页面',
+                    style: TextStyle(
+                      color: Colors.black,
+                    )),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("DefPlayerExample");
+              },
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: Text('跳转DefPlayerExample页面',
+                    style: TextStyle(
+                      color: Colors.black,
+                    )),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -90,7 +111,6 @@ class _PlayerExampleState extends State<PlayerExample> {
         Container(
           width: width,
           height: height,
-          color: Colors.black.withOpacity(0.3),
         ),
         Positioned(
           left: 0,
@@ -103,7 +123,7 @@ class _PlayerExampleState extends State<PlayerExample> {
               _startPlay();
             },
             child: Container(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withOpacity(0.5),
               alignment: Alignment.center,
               child: Text('无最小窗口全屏播放'),
             ),
@@ -120,7 +140,7 @@ class _PlayerExampleState extends State<PlayerExample> {
               _startPlay();
             },
             child: Container(
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withOpacity(0.5),
               alignment: Alignment.center,
               child: Text('有小窗口，初始全屏播放'),
             ),
@@ -137,7 +157,7 @@ class _PlayerExampleState extends State<PlayerExample> {
               _startPlay(defFullScreen: false);
             },
             child: Container(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withOpacity(0.5),
               alignment: Alignment.center,
               child: Text('有小窗口，初始小窗播放'),
             ),
