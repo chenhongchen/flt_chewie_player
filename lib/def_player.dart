@@ -7,7 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 
 enum DefPlayerUrlType {
-  asset,
+  file,
   network,
 }
 
@@ -16,9 +16,9 @@ class DefPlayerController {
   final DefPlayerUrlType urlType;
   final bool looping;
   final bool autoPlay;
-  DefPlayerController.asset(this.url,
+  DefPlayerController.file(this.url,
       {this.looping = true, this.autoPlay = false})
-      : urlType = DefPlayerUrlType.asset;
+      : urlType = DefPlayerUrlType.file;
   DefPlayerController.network(this.url,
       {this.looping = true, this.autoPlay = false})
       : urlType = DefPlayerUrlType.network;
@@ -179,8 +179,9 @@ class _DefPlayerState extends State<DefPlayer> {
 
   _setChewieController() async {
     if (_zoomOutPlaychewieController != null &&
-        _zoomOutPlaychewieController.videoPlayerController?.dataSource ==
-            widget.controller.url) {
+        _zoomOutPlaychewieController.videoPlayerController?.dataSource
+            .toLowerCase()
+            .contains(widget.controller.url.toLowerCase())) {
       _videoPlayerController =
           _zoomOutPlaychewieController.videoPlayerController;
       _chewieController = _zoomOutPlaychewieController;
