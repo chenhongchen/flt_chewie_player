@@ -31,7 +31,7 @@ UIInterfaceOrientationMask g_fcp_orientationMask;
 - (UIInterfaceOrientationMask)applicationNew_fcp:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
 {
     if (g_fcp_allowRotation) {
-        return UIInterfaceOrientationMaskAll;
+        return UIInterfaceOrientationMaskAllButUpsideDown;
     }
     g_fcp_orientationMask = [self applicationNew_fcp:application supportedInterfaceOrientationsForWindow:window];
     return g_fcp_orientationMask;
@@ -40,7 +40,7 @@ UIInterfaceOrientationMask g_fcp_orientationMask;
 u_long application_supportedInterfaceOrientationsForWindow(id self, SEL cmd, UIApplication *application, UIWindow *window)
 {
     if (g_fcp_allowRotation) {
-        return UIInterfaceOrientationMaskAll;
+        return UIInterfaceOrientationMaskAllButUpsideDown;
     }
     g_fcp_orientationMask = [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:window];
     return g_fcp_orientationMask;
