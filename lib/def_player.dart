@@ -103,8 +103,8 @@ class _DefPlayerState extends State<DefPlayer> {
           _chewieController.play();
           Future.delayed(Duration(milliseconds: 100), (() {
             _chewieController.pause();
+            _zoomOutPlaychewieController = null;
           }));
-          _zoomOutPlaychewieController = null;
         } else {
           _zoomOutPlaychewieController = _chewieController;
         }
