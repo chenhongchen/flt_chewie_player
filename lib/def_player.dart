@@ -54,6 +54,8 @@ class _DefPlayerState extends State<DefPlayer> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
 
+  static ChewieController _zoomOutPlaychewieController;
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +66,11 @@ class _DefPlayerState extends State<DefPlayer> {
   @override
   void dispose() {
     super.dispose();
+    if (_zoomOutPlaychewieController != null &&
+        _zoomOutPlaychewieController.videoPlayerController?.dataSource ==
+            widget.controller.url) {
+      return;
+    }
     _videoPlayerController?.pause();
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
@@ -97,6 +104,9 @@ class _DefPlayerState extends State<DefPlayer> {
           Future.delayed(Duration(milliseconds: 100), (() {
             _chewieController.pause();
           }));
+          _zoomOutPlaychewieController = null;
+        } else {
+          _zoomOutPlaychewieController = _chewieController;
         }
       },
     );
@@ -137,26 +147,34 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _setChewieController() async {
-    if (_videoPlayerController == null) {
-      _videoPlayerController = await _getVideoPlayerController();
+    if (_zoomOutPlaychewieController != null &&
+        _zoomOutPlaychewieController.videoPlayerController?.dataSource ==
+            widget.controller.url) {
+      _videoPlayerController =
+          _zoomOutPlaychewieController.videoPlayerController;
+      _chewieController = _zoomOutPlaychewieController;
+    } else {
+      if (_videoPlayerController == null) {
+        _videoPlayerController = await _getVideoPlayerController();
+      }
+      var aspectRatio = _videoPlayerController.value.aspectRatio;
+      TextStyle errorTextStyle =
+          widget.errorTextStyle ?? TextStyle(color: Color(0xFF333333));
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        aspectRatio: aspectRatio,
+        autoPlay: false,
+        looping: true,
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Text(
+              errorMessage,
+              style: errorTextStyle,
+            ),
+          );
+        },
+      );
     }
-    var aspectRatio = _videoPlayerController.value.aspectRatio;
-    TextStyle errorTextStyle =
-        widget.errorTextStyle ?? TextStyle(color: Color(0xFF333333));
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      aspectRatio: aspectRatio,
-      autoPlay: false,
-      looping: true,
-      errorBuilder: (context, errorMessage) {
-        return Center(
-          child: Text(
-            errorMessage,
-            style: errorTextStyle,
-          ),
-        );
-      },
-    );
     setState(() {});
   }
 
