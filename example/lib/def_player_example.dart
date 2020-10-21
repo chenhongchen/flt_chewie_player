@@ -11,10 +11,12 @@ class DefPlayerExample extends StatefulWidget {
 
 class _DefPlayerExampleState extends State<DefPlayerExample> {
   DefPlayerController _controller;
+  bool _showPlayerWhenZoomIn = false;
   @override
   void initState() {
     _controller = DefPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4');
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+        autoPlay: true);
     super.initState();
   }
 
@@ -37,6 +39,18 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
           width: width,
           height: height,
           controller: _controller,
+          showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
+          blurBackground: true,
+          zoomInWidget: GestureDetector(
+            onTap: () {
+              _showPlayerWhenZoomIn = true;
+              _controller.startPlay();
+              setState(() {});
+            },
+            child: Container(
+              color: Colors.transparent,
+            ),
+          ),
         ),
       ),
     );

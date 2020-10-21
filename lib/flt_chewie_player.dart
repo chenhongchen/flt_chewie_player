@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/services.dart';
 export 'package:video_player/video_player.dart';
@@ -28,6 +29,7 @@ class FltChewiePlayer extends StatefulWidget {
     this.zoomInWidget,
     this.showPlayerWhenZoomIn = false,
     this.snapshot = false,
+    this.blurBackground = false,
     this.snapshotMode = SnapshotMode.scaleAspectFit,
     this.onZoomChange,
   })  : assert(controller != null || zoomInWidget != null,
@@ -42,6 +44,7 @@ class FltChewiePlayer extends StatefulWidget {
   final bool snapshot;
   final SnapshotMode snapshotMode;
   final bool showPlayerWhenZoomIn;
+  final bool blurBackground;
   final Function(FltChewiePlayerZoom zoom) onZoomChange;
 
   @override
@@ -189,9 +192,27 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
   }
 
   _buildChewie() {
-    return Chewie(
-      controller: widget.controller,
-    );
+    return widget.blurBackground == true
+        ? ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 30,
+                sigmaY: 30,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(0.4),
+                child: Chewie(
+                  controller: widget.controller,
+                ),
+              ),
+            ),
+          )
+        : Container(
+            color: Colors.black,
+            child: Chewie(
+              controller: widget.controller,
+            ),
+          );
   }
 
   _buildSnapshot() {

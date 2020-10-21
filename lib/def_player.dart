@@ -14,8 +14,14 @@ enum DefPlayerUrlType {
 class DefPlayerController {
   final String url;
   final DefPlayerUrlType urlType;
-  DefPlayerController.asset(this.url) : urlType = DefPlayerUrlType.asset;
-  DefPlayerController.network(this.url) : urlType = DefPlayerUrlType.network;
+  final bool looping;
+  final bool autoPlay;
+  DefPlayerController.asset(this.url,
+      {this.looping = true, this.autoPlay = false})
+      : urlType = DefPlayerUrlType.asset;
+  DefPlayerController.network(this.url,
+      {this.looping = true, this.autoPlay = false})
+      : urlType = DefPlayerUrlType.network;
 
   _DefPlayerState _circlePlayerState;
 
@@ -23,8 +29,20 @@ class DefPlayerController {
     _circlePlayerState = null;
   }
 
-  play() {
+  startFullScreenPlay() {
+    _circlePlayerState._startFullScreenPlay();
+  }
+
+  startPlay() {
     _circlePlayerState._startPlay();
+  }
+
+  play() {
+    _circlePlayerState._play();
+  }
+
+  pause() {
+    _circlePlayerState._pause();
   }
 }
 
@@ -35,6 +53,8 @@ class DefPlayer extends StatefulWidget {
   final Widget zoomInWidget;
   final TextStyle errorTextStyle;
   final bool smallPlayBtn;
+  final bool showPlayerWhenZoomIn;
+  final bool blurBackground;
   DefPlayer({
     Key key,
     this.controller,
@@ -43,6 +63,8 @@ class DefPlayer extends StatefulWidget {
     this.zoomInWidget,
     this.errorTextStyle,
     this.smallPlayBtn = false,
+    this.showPlayerWhenZoomIn = false,
+    this.blurBackground = false,
   }) : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -93,16 +115,20 @@ class _DefPlayerState extends State<DefPlayer> {
       width: widget.width,
       height: widget.height,
       snapshot: true,
+      blurBackground: widget.blurBackground,
       snapshotMode: SnapshotMode.scaleAspectFill,
       zoomInWidget: _buildZoomInWidget(),
       controller: _chewieController,
-      showPlayerWhenZoomIn: false,
+      showPlayerWhenZoomIn: widget.showPlayerWhenZoomIn,
       onZoomChange: (value) async {
-        if (value == FltChewiePlayerZoom.zoomIn) {
+        if (value == FltChewiePlayerZoom.zoomIn &&
+            widget.showPlayerWhenZoomIn == false) {
           _chewieController.seekTo(Duration(seconds: 0));
           _chewieController.play();
           Future.delayed(Duration(milliseconds: 100), (() {
-            _chewieController.pause();
+            if (widget.showPlayerWhenZoomIn == false) {
+              _chewieController.pause();
+            }
             _zoomOutPlaychewieController = null;
           }));
         } else {
@@ -115,7 +141,7 @@ class _DefPlayerState extends State<DefPlayer> {
   _buildZoomInWidget() {
     return GestureDetector(
       onTap: () {
-        _startPlay();
+        _startFullScreenPlay();
       },
       child: widget.zoomInWidget ??
           Stack(
@@ -163,8 +189,9 @@ class _DefPlayerState extends State<DefPlayer> {
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         aspectRatio: aspectRatio,
-        autoPlay: false,
-        looping: true,
+        autoPlay: widget.controller.autoPlay == true &&
+            widget.showPlayerWhenZoomIn == true,
+        looping: widget.controller.looping,
         errorBuilder: (context, errorMessage) {
           return Center(
             child: Text(
@@ -200,13 +227,26 @@ class _DefPlayerState extends State<DefPlayer> {
     return videoPlayerController;
   }
 
+  _startFullScreenPlay() async {
+    _startPlay();
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      _chewieController.enterFullScreen();
+    });
+  }
+
   _startPlay() async {
     if (_chewieController == null) {
       await _setChewieController();
     }
     _chewieController.play();
-    Future.delayed(Duration(milliseconds: 100), () {
-      _chewieController.enterFullScreen();
-    });
+  }
+
+  _play() async {
+    _chewieController?.play();
+  }
+
+  _pause() async {
+    _chewieController?.pause();
   }
 }
