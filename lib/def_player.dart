@@ -121,16 +121,21 @@ class _DefPlayerState extends State<DefPlayer> {
       controller: _chewieController,
       showPlayerWhenZoomIn: widget.showPlayerWhenZoomIn,
       onZoomChange: (value) async {
-        if (value == FltChewiePlayerZoom.zoomIn &&
-            widget.showPlayerWhenZoomIn == false) {
-          _chewieController.seekTo(Duration(seconds: 0));
-          _chewieController.play();
-          Future.delayed(Duration(milliseconds: 100), (() {
-            if (widget.showPlayerWhenZoomIn == false) {
-              _chewieController.pause();
-            }
-            _zoomOutPlaychewieController = null;
-          }));
+        if (value == FltChewiePlayerZoom.zoomIn) {
+          if (widget.showPlayerWhenZoomIn == false) {
+            _chewieController.seekTo(Duration(seconds: 0));
+            _chewieController.play();
+            Future.delayed(Duration(milliseconds: 100), (() {
+              if (widget.showPlayerWhenZoomIn == false) {
+                _chewieController.pause();
+              }
+              _zoomOutPlaychewieController = null;
+            }));
+          } else {
+            Future.delayed(Duration(milliseconds: 100), (() {
+              _zoomOutPlaychewieController = null;
+            }));
+          }
         } else {
           _zoomOutPlaychewieController = _chewieController;
         }
