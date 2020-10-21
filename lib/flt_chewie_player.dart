@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 export 'package:video_player/video_player.dart';
 export 'package:chewie/chewie.dart';
 
@@ -52,6 +55,17 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
   bool _videoPlayerControllerAddListener = false;
   bool _videoPlayerControllerInitialized = false;
 
+  static const MethodChannel _channel =
+      const MethodChannel('flt_chewie_player');
+
+  static _zoomOut() async {
+    await _channel.invokeMethod('zoomOut');
+  }
+
+  static _zoomIn() async {
+    await _channel.invokeMethod('zoomIn');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -93,6 +107,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
       _isFullScreen = true;
       if (widget.onZoomChange != null) {
         widget.onZoomChange(FltChewiePlayerZoom.zoomOut);
+        _zoomOut();
       }
     } else if (!widget.controller.isFullScreen && _isFullScreen) {
       _isFullScreen = false;
@@ -103,6 +118,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
       }
       if (widget.onZoomChange != null) {
         widget.onZoomChange(FltChewiePlayerZoom.zoomIn);
+        _zoomIn();
       }
     }
   }
