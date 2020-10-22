@@ -15,12 +15,10 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   @override
   void initState() {
     _controller = DefPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-        autoPlay: true,
-        initMute: false, onInitialized: () {
-      _showPlayerWhenZoomIn = true;
-      setState(() {});
-    });
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+      autoPlay: false,
+      initMute: false,
+    );
     super.initState();
   }
 
@@ -47,13 +45,12 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
           blurBackground: true,
           zoomInWidget: GestureDetector(
             onTap: () {
+              _showPlayerWhenZoomIn = true;
               _controller.play();
               setState(() {});
             },
             child: Container(
-              color: _showPlayerWhenZoomIn == true
-                  ? Colors.transparent
-                  : Colors.red,
+              color: Colors.red,
             ),
           ),
         ),
