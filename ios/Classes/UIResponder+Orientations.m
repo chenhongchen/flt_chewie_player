@@ -18,7 +18,7 @@ UIInterfaceOrientationMask g_fcp_orientationMask;
     }
     
     SEL method = @selector(application:supportedInterfaceOrientationsForWindow:);
-    if (!class_addMethod([self class], method, (IMP)application_supportedInterfaceOrientationsForWindow, "I@:@c")) { // 创建失败则表示已存在该方法，则采用交换方法的方式
+    if (!class_addMethod([self class], method, (IMP)application_supportedInterfaceOrientationsForWindowFcp, "I@:@c")) { // 创建失败则表示已存在该方法，则采用交换方法的方式
         Class class = objc_getClass([@"AppDelegate" UTF8String]);
         SEL method = @selector(application:supportedInterfaceOrientationsForWindow:);
         SEL newMethod = @selector(applicationNew_fcp:supportedInterfaceOrientationsForWindow:);
@@ -37,7 +37,7 @@ UIInterfaceOrientationMask g_fcp_orientationMask;
     return g_fcp_orientationMask;
 }
 
-u_long application_supportedInterfaceOrientationsForWindow(id self, SEL cmd, UIApplication *application, UIWindow *window)
+u_long application_supportedInterfaceOrientationsForWindowFcp(id self, SEL cmd, UIApplication *application, UIWindow *window)
 {
     if (g_fcp_allowRotation) {
         return UIInterfaceOrientationMaskAllButUpsideDown;
