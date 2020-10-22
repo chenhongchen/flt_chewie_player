@@ -11,16 +11,23 @@ enum DefPlayerUrlType {
   network,
 }
 
+enum ZoomInWidgetTap {
+  none,
+  play,
+  fullScreenPlay,
+}
+
 class DefPlayerController {
   final String url;
   final DefPlayerUrlType urlType;
   final bool looping;
   final bool autoPlay;
+  final bool initMute;
   DefPlayerController.file(this.url,
-      {this.looping = true, this.autoPlay = false})
+      {this.looping = true, this.autoPlay = false, this.initMute = false})
       : urlType = DefPlayerUrlType.file;
   DefPlayerController.network(this.url,
-      {this.looping = true, this.autoPlay = false})
+      {this.looping = true, this.autoPlay = false, this.initMute = false})
       : urlType = DefPlayerUrlType.network;
 
   _DefPlayerState _circlePlayerState;
@@ -29,12 +36,8 @@ class DefPlayerController {
     _circlePlayerState = null;
   }
 
-  startFullScreenPlay() {
-    _circlePlayerState._startFullScreenPlay();
-  }
-
-  startPlay() {
-    _circlePlayerState._startPlay();
+  fullScreenPlay() {
+    _circlePlayerState._fullScreenPlay();
   }
 
   play() {
@@ -43,6 +46,10 @@ class DefPlayerController {
 
   pause() {
     _circlePlayerState._pause();
+  }
+
+  setVolume(double volume) {
+    _circlePlayerState._setVolume(volume);
   }
 }
 
@@ -55,6 +62,7 @@ class DefPlayer extends StatefulWidget {
   final bool smallPlayBtn;
   final bool showPlayerWhenZoomIn;
   final bool blurBackground;
+  final ZoomInWidgetTap zoomInWidgetTap;
   DefPlayer({
     Key key,
     this.controller,
@@ -65,6 +73,7 @@ class DefPlayer extends StatefulWidget {
     this.smallPlayBtn = false,
     this.showPlayerWhenZoomIn = false,
     this.blurBackground = false,
+    this.zoomInWidgetTap = ZoomInWidgetTap.fullScreenPlay,
   })  : assert(controller != null, 'You must provide a DefPlayerController'),
         super(key: key);
   @override
@@ -147,7 +156,11 @@ class _DefPlayerState extends State<DefPlayer> {
   _buildZoomInWidget() {
     return GestureDetector(
       onTap: () {
-        _startFullScreenPlay();
+        if (widget.zoomInWidgetTap == ZoomInWidgetTap.fullScreenPlay) {
+          _fullScreenPlay();
+        } else if (widget.zoomInWidgetTap == ZoomInWidgetTap.play) {
+          _play();
+        }
       },
       child: widget.zoomInWidget ??
           Stack(
@@ -208,6 +221,9 @@ class _DefPlayerState extends State<DefPlayer> {
           );
         },
       );
+      if (widget.controller.initMute == true) {
+        _chewieController.setVolume(0);
+      }
     }
     setState(() {});
   }
@@ -234,19 +250,12 @@ class _DefPlayerState extends State<DefPlayer> {
     return videoPlayerController;
   }
 
-  _startFullScreenPlay() async {
-    _startPlay();
+  _fullScreenPlay() async {
+    _play();
 
     Future.delayed(Duration(milliseconds: 100), () {
       _chewieController.enterFullScreen();
     });
-  }
-
-  _startPlay() async {
-    if (_chewieController == null) {
-      await _setChewieController();
-    }
-    _chewieController.play();
   }
 
   _play() async {
@@ -255,5 +264,9 @@ class _DefPlayerState extends State<DefPlayer> {
 
   _pause() async {
     _chewieController?.pause();
+  }
+
+  _setVolume(double volume) async {
+    _chewieController?.setVolume(volume);
   }
 }
