@@ -110,8 +110,10 @@ class _DefPlayerState extends State<DefPlayer> {
 
   @override
   void didUpdateWidget(DefPlayer oldWidget) {
-    if (oldWidget.controller.url != widget.controller.url) {
+    if (oldWidget.controller != widget.controller) {
       widget.controller._circlePlayerState = this;
+    }
+    if (oldWidget.controller.url != widget.controller.url) {
       _chewieController = null;
       _videoPlayerController = null;
       _setChewieController();
