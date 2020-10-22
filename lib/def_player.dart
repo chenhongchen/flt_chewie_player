@@ -65,7 +65,8 @@ class DefPlayer extends StatefulWidget {
     this.smallPlayBtn = false,
     this.showPlayerWhenZoomIn = false,
     this.blurBackground = false,
-  }) : super(key: key);
+  })  : assert(controller != null, 'You must provide a DefPlayerController'),
+        super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _DefPlayerState();
@@ -100,7 +101,7 @@ class _DefPlayerState extends State<DefPlayer> {
 
   @override
   void didUpdateWidget(DefPlayer oldWidget) {
-    if (oldWidget.controller != widget.controller) {
+    if (oldWidget.controller.url != widget.controller.url) {
       widget.controller._circlePlayerState = this;
       _chewieController = null;
       _videoPlayerController = null;
