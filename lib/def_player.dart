@@ -23,12 +23,24 @@ class DefPlayerController {
   final bool looping;
   final bool autoPlay;
   final bool initMute;
-  DefPlayerController.file(this.url,
-      {this.looping = true, this.autoPlay = false, this.initMute = false})
-      : urlType = DefPlayerUrlType.file;
-  DefPlayerController.network(this.url,
-      {this.looping = true, this.autoPlay = false, this.initMute = false})
-      : urlType = DefPlayerUrlType.network;
+  final Function(VideoPlayerValue value) onValueChange;
+  final VoidCallback onInitialized;
+  DefPlayerController.file(
+    this.url, {
+    this.looping = true,
+    this.autoPlay = false,
+    this.initMute = false,
+    this.onValueChange,
+    this.onInitialized,
+  }) : urlType = DefPlayerUrlType.file;
+  DefPlayerController.network(
+    this.url, {
+    this.looping = true,
+    this.autoPlay = false,
+    this.initMute = false,
+    this.onValueChange,
+    this.onInitialized,
+  }) : urlType = DefPlayerUrlType.network;
 
   _DefPlayerState _circlePlayerState;
 
@@ -98,6 +110,7 @@ class _DefPlayerState extends State<DefPlayer> {
   @override
   void dispose() {
     super.dispose();
+    _videoPlayerController?.removeListener(_videoPlayerControllerListener);
     if (_zoomOutPlaychewieController != null &&
         _zoomOutPlaychewieController.videoPlayerController?.dataSource ==
             widget.controller.url) {
@@ -119,6 +132,13 @@ class _DefPlayerState extends State<DefPlayer> {
       _setChewieController();
     }
     super.didUpdateWidget(oldWidget);
+  }
+
+  _videoPlayerControllerListener() {
+    if (widget.controller.onValueChange != null &&
+        _videoPlayerController != null) {
+      widget.controller.onValueChange(_videoPlayerController?.value);
+    }
   }
 
   @override
@@ -211,8 +231,7 @@ class _DefPlayerState extends State<DefPlayer> {
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         aspectRatio: aspectRatio,
-        autoPlay: widget.controller.autoPlay == true &&
-            widget.showPlayerWhenZoomIn == true,
+        autoPlay: widget.controller.autoPlay == true,
         looping: widget.controller.looping,
         errorBuilder: (context, errorMessage) {
           return Center(
@@ -227,6 +246,7 @@ class _DefPlayerState extends State<DefPlayer> {
         _chewieController.setVolume(0);
       }
     }
+    _videoPlayerController?.addListener(_videoPlayerControllerListener);
     setState(() {});
   }
 
@@ -245,6 +265,9 @@ class _DefPlayerState extends State<DefPlayer> {
     }
 
     await videoPlayerController.initialize().then((_) {
+      if (widget.controller?.onInitialized != null) {
+        widget.controller?.onInitialized();
+      }
       if (mounted) {
         setState(() {});
       }
