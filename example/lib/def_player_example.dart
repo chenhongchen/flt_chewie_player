@@ -42,6 +42,7 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
           height: height,
           controller: _controller,
           showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
+          zoominWidgetAnimation: true,
           blurBackground: true,
           zoomInWidget: GestureDetector(
             onTap: () {

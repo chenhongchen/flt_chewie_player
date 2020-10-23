@@ -27,10 +27,11 @@ class FltChewiePlayer extends StatefulWidget {
     this.height,
     this.controller,
     this.zoomInWidget,
+    this.zoominWidgetAnimation = true,
     this.showPlayerWhenZoomIn = false,
     this.snapshot = false,
-    this.blurBackground = false,
     this.snapshotMode = SnapshotMode.scaleAspectFit,
+    this.blurBackground = false,
     this.onZoomChange,
   })  : assert(controller != null || zoomInWidget != null,
             'You must provide a chewie controller or zoomInWidget'),
@@ -41,9 +42,10 @@ class FltChewiePlayer extends StatefulWidget {
   final double height;
   final ChewieController controller;
   final Widget zoomInWidget;
+  final bool zoominWidgetAnimation;
+  final bool showPlayerWhenZoomIn;
   final bool snapshot;
   final SnapshotMode snapshotMode;
-  final bool showPlayerWhenZoomIn;
   final bool blurBackground;
   final Function(FltChewiePlayerZoom zoom) onZoomChange;
 
@@ -164,10 +166,9 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
               top: 0,
               bottom: 0,
               right: 0,
-              child: Container(
-                child: Center(
-                  child: widget.zoomInWidget,
-                ),
+              child: Offstage(
+                offstage: !(widget.showPlayerWhenZoomIn ?? false),
+                child: _buildChewie(),
               ),
             ),
             Positioned(
@@ -175,10 +176,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
               top: 0,
               bottom: 0,
               right: 0,
-              child: Offstage(
-                offstage: !(widget.showPlayerWhenZoomIn ?? false),
-                child: _buildChewie(),
-              ),
+              child: _buildZoominWidget(),
             ),
           ],
         );
@@ -189,6 +187,32 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
       child = widget.zoomInWidget;
     }
     return child;
+  }
+
+  _buildZoominWidget() {
+    bool hiddenZoomInWidget = false;
+    if (widget.showPlayerWhenZoomIn &&
+        widget.controller?.videoPlayerController?.value?.initialized == true) {
+      hiddenZoomInWidget = true;
+    }
+    return widget.zoominWidgetAnimation == true
+        ? AnimatedOpacity(
+            opacity: hiddenZoomInWidget ? 0 : 1,
+            duration: Duration(milliseconds: 333),
+            child: Container(
+              child: Center(
+                child: widget.zoomInWidget,
+              ),
+            ),
+          )
+        : Offstage(
+            offstage: hiddenZoomInWidget,
+            child: Container(
+              child: Center(
+                child: widget.zoomInWidget,
+              ),
+            ),
+          );
   }
 
   _buildChewie() {

@@ -70,6 +70,7 @@ class DefPlayer extends StatefulWidget {
   final double width;
   final double height;
   final Widget zoomInWidget;
+  final bool zoominWidgetAnimation;
   final TextStyle errorTextStyle;
   final bool smallPlayBtn;
   final bool showPlayerWhenZoomIn;
@@ -81,6 +82,7 @@ class DefPlayer extends StatefulWidget {
     this.width,
     this.height,
     this.zoomInWidget,
+    this.zoominWidgetAnimation = true,
     this.errorTextStyle,
     this.smallPlayBtn = false,
     this.showPlayerWhenZoomIn = false,
@@ -150,6 +152,7 @@ class _DefPlayerState extends State<DefPlayer> {
       blurBackground: widget.blurBackground,
       snapshotMode: SnapshotMode.scaleAspectFill,
       zoomInWidget: _buildZoomInWidget(),
+      zoominWidgetAnimation: widget.zoominWidgetAnimation,
       controller: _chewieController,
       showPlayerWhenZoomIn: widget.showPlayerWhenZoomIn,
       onZoomChange: (value) async {
@@ -176,11 +179,6 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _buildZoomInWidget() {
-    bool hiddenZoomInWidget = false;
-    if (widget.showPlayerWhenZoomIn &&
-        _videoPlayerController?.value?.initialized == true) {
-      hiddenZoomInWidget = true;
-    }
     return GestureDetector(
       onTap: () {
         if (widget.zoomInWidgetTap == ZoomInWidgetTap.fullScreenPlay) {
@@ -189,35 +187,32 @@ class _DefPlayerState extends State<DefPlayer> {
           _play();
         }
       },
-      child: Offstage(
-        offstage: hiddenZoomInWidget,
-        child: widget.zoomInWidget ??
-            Stack(
-              children: <Widget>[
-                Container(
-                  color: Colors.transparent,
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  top: 0,
-                  child: Container(
-                    child: Center(
-                      child: Container(
-                        child: Image.asset(
-                          widget.smallPlayBtn
-                              ? 'images/small_play.png'
-                              : 'images/play.png',
-                          package: 'flt_chewie_player',
-                        ),
+      child: widget.zoomInWidget ??
+          Stack(
+            children: <Widget>[
+              Container(
+                color: Colors.transparent,
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: 0,
+                child: Container(
+                  child: Center(
+                    child: Container(
+                      child: Image.asset(
+                        widget.smallPlayBtn
+                            ? 'images/small_play.png'
+                            : 'images/play.png',
+                        package: 'flt_chewie_player',
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-      ),
+              ),
+            ],
+          ),
     );
   }
 

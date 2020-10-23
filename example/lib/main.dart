@@ -91,6 +91,7 @@ class _PlayerExampleState extends State<PlayerExample> {
           zoomInWidget: _buildZoomInWidget(),
           controller: _chewieController,
           showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
+          blurBackground: true,
           onZoomChange: (value) async {
             if (value == FltChewiePlayerZoom.zoomIn &&
                 _showPlayerWhenZoomIn == false) {
