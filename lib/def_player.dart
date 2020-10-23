@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flt_chewie_player/flt_chewie_player.dart';
+import 'package:flt_common_views/views/alter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import 'package:connectivity/connectivity.dart';
 
 enum DefPlayerUrlType {
   file,
@@ -102,16 +104,23 @@ class _DefPlayerState extends State<DefPlayer> {
 
   static ChewieController _zoomOutPlaychewieController;
 
+  // 网络监听器
+  var _subscription;
+  ConnectivityResult _connectivityResult;
+  static bool _allowMobilePlay = false;
+
   @override
   void initState() {
     super.initState();
     widget.controller._circlePlayerState = this;
     _setChewieController();
+    _initConnectivity();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _subscription?.cancel();
     _videoPlayerController?.removeListener(_videoPlayerControllerListener);
     if (_zoomOutPlaychewieController != null &&
         _zoomOutPlaychewieController.videoPlayerController?.dataSource ==
@@ -141,6 +150,23 @@ class _DefPlayerState extends State<DefPlayer> {
         _videoPlayerController != null) {
       widget.controller.onValueChange(_videoPlayerController?.value);
     }
+  }
+
+  _initConnectivity() async {
+    // 网络状态监听
+    _subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      _connectivityResult = result;
+      if (_allowMobilePlay != true && result == ConnectivityResult.mobile) {
+        if (_videoPlayerController.value.initialized) {
+          _pause();
+          _play();
+        }
+      } else if (result == ConnectivityResult.wifi) {}
+    });
+
+    _connectivityResult = await (Connectivity().checkConnectivity());
   }
 
   @override
@@ -257,6 +283,11 @@ class _DefPlayerState extends State<DefPlayer> {
     VideoPlayerController videoPlayerController;
     // 网络视频
     if (widget.controller.urlType == DefPlayerUrlType.network) {
+      _connectivityResult = await (Connectivity().checkConnectivity());
+      if (_allowMobilePlay != true &&
+          _connectivityResult == ConnectivityResult.mobile) {
+        return null;
+      }
       videoPlayerController = VideoPlayerController.network(
         widget.controller.url,
       );
@@ -279,14 +310,39 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _fullScreenPlay() async {
-    _play();
-
-    Future.delayed(Duration(milliseconds: 100), () {
-      _chewieController.enterFullScreen();
-    });
+    if (_allowMobilePlay != true &&
+        _connectivityResult == ConnectivityResult.mobile) {
+      showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
+        _allowMobilePlay = true;
+        _startPlay();
+        Future.delayed(Duration(milliseconds: 100), () {
+          _chewieController.enterFullScreen();
+        });
+      });
+    } else {
+      _startPlay();
+      Future.delayed(Duration(milliseconds: 100), () {
+        _chewieController.enterFullScreen();
+      });
+    }
   }
 
   _play() async {
+    if (_allowMobilePlay != true &&
+        _connectivityResult == ConnectivityResult.mobile) {
+      showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
+        _allowMobilePlay = true;
+        _startPlay();
+      });
+    } else {
+      _startPlay();
+    }
+  }
+
+  _startPlay() {
+    if (_videoPlayerController == null) {
+      _setChewieController();
+    }
     _chewieController?.play();
   }
 

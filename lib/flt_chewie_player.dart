@@ -62,7 +62,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
   bool _videoPlayerControllerInitialized = false;
 
   //动画控制器
-  AnimationController _controller;
+  AnimationController _animationController;
   Animation<double> _animation;
   bool _hiddenZoomInWidget;
 
@@ -81,9 +81,9 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
   void initState() {
     super.initState();
     _init();
-    _controller =
+    _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 333));
-    _animation = Tween(begin: 1.0, end: 0.0).animate(_controller)
+    _animation = Tween(begin: 1.0, end: 0.0).animate(_animationController)
       ..addListener(() {
         setState(() {});
       });
@@ -96,7 +96,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
       widget.controller.videoPlayerController
           .removeListener(_videoPlayerControllerListener);
     }
-    _controller?.dispose();
+    _animationController?.dispose();
     super.dispose();
   }
 
@@ -213,9 +213,9 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
       _hiddenZoomInWidget = hiddenZoomInWidget;
       if (widget.zoominWidgetAnimation == true) {
         if (hiddenZoomInWidget == true) {
-          _controller.forward();
+          _animationController.forward();
         } else {
-          _controller?.reverse();
+          _animationController?.reverse();
         }
       }
     }

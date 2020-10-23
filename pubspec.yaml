@@ -15,6 +15,13 @@ dependencies:
   #  视频播放控件
   chewie: ^0.9.10
 
+  # 网络监听
+  connectivity: ^0.4.4
+
+  flt_common_views:
+    git:
+      url: 'http://117.41.1.11:2086/plugins/flt_common_views'
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
