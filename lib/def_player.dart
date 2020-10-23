@@ -101,6 +101,7 @@ class DefPlayer extends StatefulWidget {
 class _DefPlayerState extends State<DefPlayer> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
+  bool _isSetChewieControllering = false;
 
   static ChewieController _zoomOutPlaychewieController;
 
@@ -243,6 +244,10 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _setChewieController() async {
+    if (_isSetChewieControllering == true) {
+      return;
+    }
+    _isSetChewieControllering = true;
     if (_zoomOutPlaychewieController != null &&
         _zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
@@ -253,6 +258,10 @@ class _DefPlayerState extends State<DefPlayer> {
     } else {
       if (_videoPlayerController == null) {
         _videoPlayerController = await _getVideoPlayerController();
+      }
+      if (_videoPlayerController == null) {
+        _isSetChewieControllering = false;
+        return;
       }
       var aspectRatio = _videoPlayerController.value.aspectRatio;
       TextStyle errorTextStyle =
@@ -277,6 +286,7 @@ class _DefPlayerState extends State<DefPlayer> {
     }
     _videoPlayerController?.addListener(_videoPlayerControllerListener);
     setState(() {});
+    _isSetChewieControllering = false;
   }
 
   Future<VideoPlayerController> _getVideoPlayerController() async {

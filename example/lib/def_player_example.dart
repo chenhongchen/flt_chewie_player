@@ -11,7 +11,7 @@ class DefPlayerExample extends StatefulWidget {
 
 class _DefPlayerExampleState extends State<DefPlayerExample> {
   DefPlayerController _controller;
-  bool _showPlayerWhenZoomIn = true;
+  bool _showPlayerWhenZoomIn = false;
   @override
   void initState() {
     _controller = DefPlayerController.network(
