@@ -55,10 +55,16 @@ class FltChewiePlayer extends StatefulWidget {
   }
 }
 
-class _FltChewiePlayerState extends State<FltChewiePlayer> {
+class _FltChewiePlayerState extends State<FltChewiePlayer>
+    with SingleTickerProviderStateMixin {
   bool _isFullScreen = false;
   bool _videoPlayerControllerAddListener = false;
   bool _videoPlayerControllerInitialized = false;
+
+  //动画控制器
+  AnimationController _controller;
+  Animation<double> _animation;
+  bool _hiddenZoomInWidget;
 
   static const MethodChannel _channel =
       const MethodChannel('flt_chewie_player');
@@ -75,6 +81,12 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
   void initState() {
     super.initState();
     _init();
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 333));
+    _animation = Tween(begin: 1.0, end: 0.0).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
   }
 
   @override
@@ -84,6 +96,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
       widget.controller.videoPlayerController
           .removeListener(_videoPlayerControllerListener);
     }
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -195,16 +208,26 @@ class _FltChewiePlayerState extends State<FltChewiePlayer> {
         widget.controller?.videoPlayerController?.value?.initialized == true) {
       hiddenZoomInWidget = true;
     }
-    return widget.zoominWidgetAnimation == true
-        ? AnimatedOpacity(
-            opacity: hiddenZoomInWidget ? 0 : 1,
-            duration: Duration(milliseconds: 333),
+
+    if (_hiddenZoomInWidget != hiddenZoomInWidget) {
+      _hiddenZoomInWidget = hiddenZoomInWidget;
+      if (widget.zoominWidgetAnimation == true) {
+        if (hiddenZoomInWidget == true) {
+          _controller.forward();
+        } else {
+          _controller?.reverse();
+        }
+      }
+    }
+
+    return widget.zoominWidgetAnimation == true && (_animation?.value ?? 0) > 0
+        ? Opacity(
+            opacity: _animation?.value,
             child: Container(
               child: Center(
                 child: widget.zoomInWidget,
               ),
-            ),
-          )
+            ))
         : Offstage(
             offstage: hiddenZoomInWidget,
             child: Container(
