@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flt_chewie_player/flt_chewie_player.dart';
 import 'package:flt_common_views/views/alter.dart';
+import 'package:flt_hc_hub/hud/hc_activity_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -78,6 +79,7 @@ class DefPlayer extends StatefulWidget {
   final bool showPlayerWhenZoomIn;
   final bool blurBackground;
   final ZoomInWidgetTap zoomInWidgetTap;
+  final Color loadColor;
   DefPlayer({
     Key key,
     this.controller,
@@ -90,6 +92,7 @@ class DefPlayer extends StatefulWidget {
     this.showPlayerWhenZoomIn = false,
     this.blurBackground = false,
     this.zoomInWidgetTap = ZoomInWidgetTap.fullScreenPlay,
+    this.loadColor = CupertinoColors.inactiveGray,
   })  : assert(controller != null, 'You must provide a DefPlayerController'),
         super(key: key);
   @override
@@ -109,6 +112,8 @@ class _DefPlayerState extends State<DefPlayer> {
   var _subscription;
   ConnectivityResult _connectivityResult;
   static bool _allowMobilePlay = false;
+
+  bool _isInitializing = false;
 
   @override
   void initState() {
@@ -214,32 +219,51 @@ class _DefPlayerState extends State<DefPlayer> {
           _play();
         }
       },
-      child: widget.zoomInWidget ??
-          Stack(
-            children: <Widget>[
-              Container(
-                color: Colors.transparent,
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                top: 0,
-                child: Container(
-                  child: Center(
+      child: Stack(
+        children: <Widget>[
+          widget.zoomInWidget ??
+              Stack(
+                children: <Widget>[
+                  Container(
+                    color: Colors.transparent,
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    top: 0,
                     child: Container(
-                      child: Image.asset(
-                        widget.smallPlayBtn
-                            ? 'images/small_play.png'
-                            : 'images/play.png',
-                        package: 'flt_chewie_player',
+                      child: Center(
+                        child: Container(
+                          child: Image.asset(
+                            widget.smallPlayBtn
+                                ? 'images/small_play.png'
+                                : 'images/play.png',
+                            package: 'flt_chewie_player',
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: Container(
+              child: Center(
+                child: widget.showPlayerWhenZoomIn && _isInitializing
+                    ? HCActivityIndicator(
+                        color: widget.loadColor,
+                      )
+                    : Container(),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -308,11 +332,14 @@ class _DefPlayerState extends State<DefPlayer> {
       videoPlayerController = VideoPlayerController.file(file);
     }
 
+    _isInitializing = true;
+    setState(() {});
     await videoPlayerController.initialize().then((_) {
       if (widget.controller?.onInitialized != null) {
         widget.controller?.onInitialized();
       }
       if (mounted) {
+        _isInitializing = false;
         setState(() {});
       }
     });
