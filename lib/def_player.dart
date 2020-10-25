@@ -140,9 +140,15 @@ class _DefPlayerState extends State<DefPlayer> {
             widget.controller.url) {
       return;
     }
+    _disposeController();
+  }
+
+  _disposeController() {
     _videoPlayerController?.pause();
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
+    _videoPlayerController = null;
+    _chewieController = null;
   }
 
   @override
@@ -151,8 +157,7 @@ class _DefPlayerState extends State<DefPlayer> {
       widget.controller._defPlayerState = this;
     }
     if (oldWidget.controller.url != widget.controller.url) {
-      _chewieController = null;
-      _videoPlayerController = null;
+      _disposeController();
       _setChewieController();
     }
     super.didUpdateWidget(oldWidget);
@@ -370,7 +375,8 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _fullScreenPlay() async {
-    if (_allowMobilePlay != true &&
+    if (widget.controller?.urlType == DefPlayerUrlType.network &&
+        _allowMobilePlay != true &&
         _connectivityResult == ConnectivityResult.mobile) {
       showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
         _allowMobilePlay = true;
@@ -388,7 +394,8 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _play() async {
-    if (_allowMobilePlay != true &&
+    if (widget.controller?.urlType == DefPlayerUrlType.network &&
+        _allowMobilePlay != true &&
         _connectivityResult == ConnectivityResult.mobile) {
       showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
         _allowMobilePlay = true;
