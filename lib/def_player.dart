@@ -299,7 +299,7 @@ class _DefPlayerState extends State<DefPlayer> {
       _chewieController = _zoomOutPlaychewieController;
     } else {
       if (_videoPlayerController == null) {
-        _videoPlayerController = await _getVideoPlayerController();
+        await _getVideoPlayerController();
       }
       if (_videoPlayerController == null) {
         _isSetChewieControllering = false;
@@ -331,14 +331,15 @@ class _DefPlayerState extends State<DefPlayer> {
     _isSetChewieControllering = false;
   }
 
-  Future<VideoPlayerController> _getVideoPlayerController() async {
+  _getVideoPlayerController() async {
     VideoPlayerController videoPlayerController;
     // 网络视频
     if (widget.controller.urlType == DefPlayerUrlType.network) {
       _connectivityResult = await (Connectivity().checkConnectivity());
       if (_allowMobilePlay != true &&
           _connectivityResult == ConnectivityResult.mobile) {
-        return null;
+        _videoPlayerController == null;
+        return;
       }
       videoPlayerController = VideoPlayerController.network(
         widget.controller.url,
@@ -349,6 +350,8 @@ class _DefPlayerState extends State<DefPlayer> {
       File file = File(widget.controller.url);
       videoPlayerController = VideoPlayerController.file(file);
     }
+
+    _videoPlayerController = videoPlayerController;
 
     _initializeStatus = InitializeStatus.start;
     if (widget.controller.onInitializeChanged != null) {
@@ -364,7 +367,6 @@ class _DefPlayerState extends State<DefPlayer> {
         setState(() {});
       }
     });
-    return videoPlayerController;
   }
 
   _fullScreenPlay() async {
