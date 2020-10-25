@@ -20,51 +20,56 @@ enum ZoomInWidgetTap {
   fullScreenPlay,
 }
 
+enum InitializeStatus {
+  start,
+  complete,
+}
+
 class DefPlayerController {
   final String url;
   final DefPlayerUrlType urlType;
   final bool looping;
   final bool autoPlay;
   final bool initMute;
-  final Function(VideoPlayerValue value) onValueChange;
-  final VoidCallback onInitialized;
+  final Function(VideoPlayerValue value) onValueChanged;
+  final Function(InitializeStatus status) onInitializeChanged;
   DefPlayerController.file(
     this.url, {
     this.looping = true,
     this.autoPlay = false,
     this.initMute = false,
-    this.onValueChange,
-    this.onInitialized,
+    this.onValueChanged,
+    this.onInitializeChanged,
   }) : urlType = DefPlayerUrlType.file;
   DefPlayerController.network(
     this.url, {
     this.looping = true,
     this.autoPlay = false,
     this.initMute = false,
-    this.onValueChange,
-    this.onInitialized,
+    this.onValueChanged,
+    this.onInitializeChanged,
   }) : urlType = DefPlayerUrlType.network;
 
-  _DefPlayerState _circlePlayerState;
+  _DefPlayerState _defPlayerState;
 
   dispose() {
-    _circlePlayerState = null;
+    _defPlayerState = null;
   }
 
   fullScreenPlay() {
-    _circlePlayerState._fullScreenPlay();
+    _defPlayerState._fullScreenPlay();
   }
 
   play() {
-    _circlePlayerState._play();
+    _defPlayerState._play();
   }
 
   pause() {
-    _circlePlayerState._pause();
+    _defPlayerState._pause();
   }
 
   setVolume(double volume) {
-    _circlePlayerState._setVolume(volume);
+    _defPlayerState._setVolume(volume);
   }
 }
 
@@ -74,6 +79,7 @@ class DefPlayer extends StatefulWidget {
   final double height;
   final Widget zoomInWidget;
   final bool zoominWidgetAnimation;
+  final Widget playerIcon;
   final TextStyle errorTextStyle;
   final bool smallPlayBtn;
   final bool showPlayerWhenZoomIn;
@@ -87,6 +93,7 @@ class DefPlayer extends StatefulWidget {
     this.height,
     this.zoomInWidget,
     this.zoominWidgetAnimation = true,
+    this.playerIcon,
     this.errorTextStyle,
     this.smallPlayBtn = false,
     this.showPlayerWhenZoomIn = false,
@@ -113,12 +120,12 @@ class _DefPlayerState extends State<DefPlayer> {
   ConnectivityResult _connectivityResult;
   static bool _allowMobilePlay = false;
 
-  bool _isInitializing = false;
+  InitializeStatus _initializeStatus;
 
   @override
   void initState() {
     super.initState();
-    widget.controller._circlePlayerState = this;
+    widget.controller._defPlayerState = this;
     _setChewieController();
     _initConnectivity();
   }
@@ -141,7 +148,7 @@ class _DefPlayerState extends State<DefPlayer> {
   @override
   void didUpdateWidget(DefPlayer oldWidget) {
     if (oldWidget.controller != widget.controller) {
-      widget.controller._circlePlayerState = this;
+      widget.controller._defPlayerState = this;
     }
     if (oldWidget.controller.url != widget.controller.url) {
       _chewieController = null;
@@ -152,9 +159,9 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _videoPlayerControllerListener() {
-    if (widget.controller.onValueChange != null &&
+    if (widget.controller.onValueChanged != null &&
         _videoPlayerController != null) {
-      widget.controller.onValueChange(_videoPlayerController?.value);
+      widget.controller.onValueChanged(_videoPlayerController?.value);
     }
   }
 
@@ -252,9 +259,20 @@ class _DefPlayerState extends State<DefPlayer> {
             right: 0,
             top: 0,
             bottom: 0,
+            child: widget.playerIcon == null ||
+                    (widget.showPlayerWhenZoomIn && _initializeStatus != null)
+                ? Container()
+                : widget.playerIcon,
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
             child: Container(
               child: Center(
-                child: widget.showPlayerWhenZoomIn && _isInitializing
+                child: widget.showPlayerWhenZoomIn &&
+                        _initializeStatus == InitializeStatus.start
                     ? HCActivityIndicator(
                         color: widget.loadColor,
                       )
@@ -332,14 +350,17 @@ class _DefPlayerState extends State<DefPlayer> {
       videoPlayerController = VideoPlayerController.file(file);
     }
 
-    _isInitializing = true;
+    _initializeStatus = InitializeStatus.start;
+    if (widget.controller.onInitializeChanged != null) {
+      widget.controller.onInitializeChanged(_initializeStatus);
+    }
     setState(() {});
     await videoPlayerController.initialize().then((_) {
-      if (widget.controller?.onInitialized != null) {
-        widget.controller?.onInitialized();
+      _initializeStatus = InitializeStatus.complete;
+      if (widget.controller?.onInitializeChanged != null) {
+        widget.controller?.onInitializeChanged(_initializeStatus);
       }
       if (mounted) {
-        _isInitializing = false;
         setState(() {});
       }
     });

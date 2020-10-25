@@ -1,3 +1,4 @@
+import 'package:flt_chewie_player/flt_chewie_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flt_chewie_player/def_player.dart';
@@ -16,7 +17,7 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   void initState() {
     _controller = DefPlayerController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-      autoPlay: false,
+      autoPlay: true,
       initMute: false,
     );
     super.initState();
@@ -45,17 +46,25 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
           zoominWidgetAnimation: true,
           blurBackground: true,
           zoomInWidget: GestureDetector(
-            onTap: () {
-              _showPlayerWhenZoomIn = true;
-              _controller.play();
-              setState(() {});
-            },
+            onTap: _onTapPlayer,
             child: Container(
               color: Colors.red,
+            ),
+          ),
+          playerIcon: GestureDetector(
+            onTap: _onTapPlayer,
+            child: Center(
+              child: Image.asset('images/play.png'),
             ),
           ),
         ),
       ),
     );
+  }
+
+  _onTapPlayer() {
+    _showPlayerWhenZoomIn = true;
+    _controller.play();
+    setState(() {});
   }
 }
