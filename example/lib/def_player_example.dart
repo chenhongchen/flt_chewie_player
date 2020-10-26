@@ -12,7 +12,7 @@ class DefPlayerExample extends StatefulWidget {
 
 class _DefPlayerExampleState extends State<DefPlayerExample> {
   DefPlayerController _controller;
-  bool _showPlayerWhenZoomIn = true;
+  bool _showPlayerWhenZoomIn = false;
   @override
   void initState() {
     _controller = DefPlayerController.network(
@@ -45,6 +45,7 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
           showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
           zoominWidgetAnimation: true,
           blurBackground: true,
+          snapshot: false,
           zoomInWidget: GestureDetector(
             onTap: _onTapPlayer,
             child: Container(
@@ -63,8 +64,8 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   }
 
   _onTapPlayer() {
-    _showPlayerWhenZoomIn = true;
-    _controller.play();
+    // _showPlayerWhenZoomIn = true;
+    _controller.fullScreenPlay();
     setState(() {});
   }
 }

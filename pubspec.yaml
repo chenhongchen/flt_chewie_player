@@ -18,6 +18,8 @@ dependencies:
   # 网络监听
   connectivity: ^0.4.4
 
+  event_bus: ^1.1.0
+
   flt_common_views:
     git:
       url: 'http://117.41.1.11:2086/plugins/flt_common_views'

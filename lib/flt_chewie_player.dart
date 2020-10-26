@@ -239,6 +239,9 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
   }
 
   _buildChewie() {
+    if (widget.controller == null) {
+      return Container();
+    }
     return widget.blurBackground == true
         ? ClipRect(
             child: BackdropFilter(

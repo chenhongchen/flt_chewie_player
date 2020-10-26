@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flt_chewie_player/flt_chewie_player.dart';
@@ -8,6 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:event_bus/event_bus.dart';
+
+var defPlayerEventBus = EventBus();
+
+class DefPlayerEventBusEvent {}
 
 enum DefPlayerUrlType {
   file,
@@ -86,6 +92,7 @@ class DefPlayer extends StatefulWidget {
   final bool blurBackground;
   final ZoomInWidgetTap zoomInWidgetTap;
   final Color loadColor;
+  final bool snapshot;
   DefPlayer({
     Key key,
     this.controller,
@@ -100,6 +107,7 @@ class DefPlayer extends StatefulWidget {
     this.blurBackground = false,
     this.zoomInWidgetTap = ZoomInWidgetTap.fullScreenPlay,
     this.loadColor = CupertinoColors.inactiveGray,
+    this.snapshot = true,
   })  : assert(controller != null, 'You must provide a DefPlayerController'),
         super(key: key);
   @override
@@ -122,12 +130,28 @@ class _DefPlayerState extends State<DefPlayer> {
 
   InitializeStatus _initializeStatus;
 
+  static String _needFullScreenPlayUrl;
+  static set needFullScreenPlayUrl(newValue) {
+    _needFullScreenPlayUrl = newValue;
+    defPlayerEventBus.fire(DefPlayerEventBusEvent());
+  }
+
   @override
   void initState() {
     super.initState();
     widget.controller._defPlayerState = this;
-    _setChewieController();
+    if (widget.snapshot == true ||
+        (widget.controller.autoPlay == true &&
+            widget.showPlayerWhenZoomIn == true)) {
+      _setChewieController();
+    }
     _initConnectivity();
+
+    defPlayerEventBus
+        .on<DefPlayerEventBusEvent>()
+        .listen((DefPlayerEventBusEvent data) {
+      setState(() {});
+    });
   }
 
   @override
@@ -144,11 +168,15 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _disposeController() {
-    _videoPlayerController?.pause();
-    _videoPlayerController?.dispose();
-    _chewieController?.dispose();
-    _videoPlayerController = null;
-    _chewieController = null;
+    if (_videoPlayerController != null) {
+      _videoPlayerController?.pause();
+      _videoPlayerController?.dispose();
+      _chewieController = null;
+    }
+    if (_chewieController != null) {
+      _chewieController?.dispose();
+      _videoPlayerController = null;
+    }
   }
 
   @override
@@ -190,36 +218,51 @@ class _DefPlayerState extends State<DefPlayer> {
   @override
   Widget build(BuildContext context) {
     return FltChewiePlayer(
-      width: widget.width,
-      height: widget.height,
-      snapshot: true,
-      blurBackground: widget.blurBackground,
-      snapshotMode: SnapshotMode.scaleAspectFill,
-      zoomInWidget: _buildZoomInWidget(),
-      zoominWidgetAnimation: widget.zoominWidgetAnimation,
-      controller: _chewieController,
-      showPlayerWhenZoomIn: widget.showPlayerWhenZoomIn,
-      onZoomChange: (value) async {
-        if (value == FltChewiePlayerZoom.zoomIn) {
-          if (widget.showPlayerWhenZoomIn == false) {
-            _chewieController.seekTo(Duration(seconds: 0));
-            _chewieController.play();
-            Future.delayed(Duration(milliseconds: 100), (() {
-              if (widget.showPlayerWhenZoomIn == false) {
-                _chewieController.pause();
+        width: widget.width,
+        height: widget.height,
+        snapshot: true,
+        blurBackground: widget.blurBackground,
+        snapshotMode: SnapshotMode.scaleAspectFill,
+        zoomInWidget: _buildZoomInWidget(),
+        zoominWidgetAnimation: widget.zoominWidgetAnimation,
+        controller: _chewieController,
+        showPlayerWhenZoomIn: widget.showPlayerWhenZoomIn,
+        onZoomChange: (value) async {
+          if (value == FltChewiePlayerZoom.zoomIn) {
+            if (widget.showPlayerWhenZoomIn == false) {
+              if (widget.snapshot == true) {
+                _chewieController.seekTo(Duration(seconds: 0));
+                _chewieController.play();
+                Future.delayed(Duration(milliseconds: 100), (() {
+                  if (widget.showPlayerWhenZoomIn == false) {
+                    _chewieController.pause();
+                  }
+                  _zoomOutPlaychewieController = null;
+                }));
+              } else {
+                var chewieController = _chewieController;
+                var videoPlayerController = _videoPlayerController;
+                chewieController.pause();
+                _chewieController = null;
+                _videoPlayerController = null;
+                setState(() {});
+                Future.delayed(Duration(milliseconds: 100), () {
+                  _zoomOutPlaychewieController = null;
+                  Future.delayed(Duration(seconds: 1), (() {
+                    videoPlayerController.dispose();
+                    chewieController.dispose();
+                  }));
+                });
               }
-              _zoomOutPlaychewieController = null;
-            }));
+            } else {
+              Future.delayed(Duration(milliseconds: 100), (() {
+                _zoomOutPlaychewieController = null;
+              }));
+            }
           } else {
-            Future.delayed(Duration(milliseconds: 100), (() {
-              _zoomOutPlaychewieController = null;
-            }));
+            _zoomOutPlaychewieController = _chewieController;
           }
-        } else {
-          _zoomOutPlaychewieController = _chewieController;
-        }
-      },
-    );
+        });
   }
 
   _buildZoomInWidget() {
@@ -276,8 +319,9 @@ class _DefPlayerState extends State<DefPlayer> {
             bottom: 0,
             child: Container(
               child: Center(
-                child: widget.showPlayerWhenZoomIn &&
-                        _initializeStatus == InitializeStatus.start
+                child: _needFullScreenPlayUrl == widget.controller.url ||
+                        (widget.showPlayerWhenZoomIn &&
+                            _initializeStatus == InitializeStatus.start)
                     ? HCActivityIndicator(
                         color: widget.loadColor,
                       )
@@ -333,6 +377,12 @@ class _DefPlayerState extends State<DefPlayer> {
     }
     _videoPlayerController?.addListener(_videoPlayerControllerListener);
     setState(() {});
+
+    if (_needFullScreenPlayUrl == widget.controller.url) {
+      needFullScreenPlayUrl = null;
+      _fullScreenPlay();
+    }
+
     _isSetChewieControllering = false;
   }
 
@@ -375,17 +425,30 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _fullScreenPlay() async {
+    if (_needFullScreenPlayUrl == widget.controller.url) {
+      return;
+    }
     if (widget.controller?.urlType == DefPlayerUrlType.network &&
         _allowMobilePlay != true &&
         _connectivityResult == ConnectivityResult.mobile) {
       showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
         _allowMobilePlay = true;
+        if (_chewieController == null) {
+          _setChewieController();
+          needFullScreenPlayUrl = widget.controller.url;
+          return;
+        }
         _startPlay();
         Future.delayed(Duration(milliseconds: 100), () {
           _chewieController.enterFullScreen();
         });
       });
     } else {
+      if (_chewieController == null) {
+        _setChewieController();
+        needFullScreenPlayUrl = widget.controller.url;
+        return;
+      }
       _startPlay();
       Future.delayed(Duration(milliseconds: 100), () {
         _chewieController.enterFullScreen();
@@ -406,9 +469,9 @@ class _DefPlayerState extends State<DefPlayer> {
     }
   }
 
-  _startPlay() {
+  _startPlay() async {
     if (_videoPlayerController == null) {
-      _setChewieController();
+      await _setChewieController();
     }
     _chewieController?.play();
   }
