@@ -308,6 +308,7 @@ class _DefPlayerState extends State<DefPlayer> {
             top: 0,
             bottom: 0,
             child: widget.playerIcon == null ||
+                    _needFullScreenPlayUrl == widget.controller.url ||
                     (widget.showPlayerWhenZoomIn && _initializeStatus != null)
                 ? Container()
                 : widget.playerIcon,
