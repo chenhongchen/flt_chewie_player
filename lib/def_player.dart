@@ -168,15 +168,23 @@ class _DefPlayerState extends State<DefPlayer> {
   }
 
   _disposeController() {
-    if (_videoPlayerController != null) {
-      _videoPlayerController?.pause();
-      _videoPlayerController?.dispose();
-      _chewieController = null;
-    }
-    if (_chewieController != null) {
-      _chewieController?.dispose();
-      _videoPlayerController = null;
-    }
+    _videoPlayerController?.pause();
+    _videoPlayerController?.dispose();
+    _chewieController = null;
+    _chewieController?.dispose();
+    _videoPlayerController = null;
+  }
+
+  _delayDisposeController() {
+    var chewieController = _chewieController;
+    var videoPlayerController = _videoPlayerController;
+    chewieController.pause();
+    _chewieController = null;
+    _videoPlayerController = null;
+    Future.delayed(Duration(seconds: 1), (() {
+      videoPlayerController.dispose();
+      chewieController.dispose();
+    }));
   }
 
   @override
@@ -185,7 +193,7 @@ class _DefPlayerState extends State<DefPlayer> {
       widget.controller._defPlayerState = this;
     }
     if (oldWidget.controller.url != widget.controller.url) {
-      _disposeController();
+      _delayDisposeController();
       _setChewieController();
     }
     super.didUpdateWidget(oldWidget);
@@ -240,18 +248,10 @@ class _DefPlayerState extends State<DefPlayer> {
                   _zoomOutPlaychewieController = null;
                 }));
               } else {
-                var chewieController = _chewieController;
-                var videoPlayerController = _videoPlayerController;
-                chewieController.pause();
-                _chewieController = null;
-                _videoPlayerController = null;
+                _delayDisposeController();
                 setState(() {});
                 Future.delayed(Duration(milliseconds: 100), () {
                   _zoomOutPlaychewieController = null;
-                  Future.delayed(Duration(seconds: 1), (() {
-                    videoPlayerController.dispose();
-                    chewieController.dispose();
-                  }));
                 });
               }
             } else {
