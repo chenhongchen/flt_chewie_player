@@ -145,6 +145,7 @@ class DefPlayerState extends State<DefPlayer> {
         (widget.controller.autoPlay == true &&
             widget.showPlayerWhenZoomIn == true) ||
         (zoomOutPlaychewieController != null &&
+            zoomOutPlaychewieController.isFullScreen == true &&
             zoomOutPlaychewieController.videoPlayerController?.dataSource
                 .toLowerCase()
                 .contains(widget.controller.url.toLowerCase()))) {
@@ -169,8 +170,12 @@ class DefPlayerState extends State<DefPlayer> {
             .toLowerCase()
             .contains(widget.controller.url.toLowerCase())) {
       zoomOutDefPlayer = null;
-      return;
+      if (zoomOutPlaychewieController.isFullScreen == true) {
+        return;
+      }
+      zoomOutPlaychewieController = null;
     }
+
     _disposeController();
   }
 
@@ -180,6 +185,10 @@ class DefPlayerState extends State<DefPlayer> {
     _chewieController = null;
     _chewieController?.dispose();
     _videoPlayerController = null;
+    _isSetChewieControllering == false;
+    if (_needFullScreenPlayUrl == widget.controller.url) {
+      needFullScreenPlayUrl = null;
+    }
   }
 
   _delayDisposeController() {
@@ -188,7 +197,11 @@ class DefPlayerState extends State<DefPlayer> {
     chewieController.pause();
     _chewieController = null;
     _videoPlayerController = null;
-    Future.delayed(Duration(seconds: 1), (() {
+    _isSetChewieControllering == false;
+    if (_needFullScreenPlayUrl == widget.controller.url) {
+      needFullScreenPlayUrl = null;
+    }
+    Future.delayed(Duration(seconds: 3), (() {
       videoPlayerController.dispose();
       chewieController.dispose();
     }));
@@ -258,12 +271,10 @@ class DefPlayerState extends State<DefPlayer> {
                   zoomOutDefPlayer = null;
                 }));
               } else {
+                zoomOutPlaychewieController = null;
+                zoomOutDefPlayer = null;
                 _delayDisposeController();
                 setState(() {});
-                Future.delayed(Duration(milliseconds: 100), () {
-                  zoomOutPlaychewieController = null;
-                  zoomOutDefPlayer = null;
-                });
               }
             } else {
               Future.delayed(Duration(milliseconds: 100), (() {
@@ -357,10 +368,15 @@ class DefPlayerState extends State<DefPlayer> {
         zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
             .contains(widget.controller.url.toLowerCase())) {
-      zoomOutDefPlayer = this;
-      _videoPlayerController =
-          zoomOutPlaychewieController.videoPlayerController;
-      _chewieController = zoomOutPlaychewieController;
+      if (zoomOutPlaychewieController.isFullScreen == true) {
+        zoomOutDefPlayer = this;
+        _videoPlayerController =
+            zoomOutPlaychewieController.videoPlayerController;
+        _chewieController = zoomOutPlaychewieController;
+      } else {
+        _isSetChewieControllering = false;
+        return;
+      }
     } else {
       if (_videoPlayerController == null) {
         await _getVideoPlayerController();
