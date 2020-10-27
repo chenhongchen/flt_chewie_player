@@ -160,8 +160,9 @@ class _DefPlayerState extends State<DefPlayer> {
     _subscription?.cancel();
     _videoPlayerController?.removeListener(_videoPlayerControllerListener);
     if (_zoomOutPlaychewieController != null &&
-        _zoomOutPlaychewieController.videoPlayerController?.dataSource ==
-            widget.controller.url) {
+        _zoomOutPlaychewieController.videoPlayerController?.dataSource
+            .toLowerCase()
+            .contains(widget.controller.url.toLowerCase())) {
       return;
     }
     _disposeController();
