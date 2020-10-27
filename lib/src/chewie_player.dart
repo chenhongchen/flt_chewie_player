@@ -338,8 +338,8 @@ class ChewieController extends ChangeNotifier {
           DefPlayerState.zoomOutPlaychewieController.videoPlayerController
               .dispose();
           DefPlayerState.zoomOutPlaychewieController.dispose();
-          DefPlayerState.zoomOutPlaychewieController = null;
         }
+        DefPlayerState.zoomOutPlaychewieController = null;
       });
     }
   }
