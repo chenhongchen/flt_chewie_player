@@ -142,7 +142,11 @@ class _DefPlayerState extends State<DefPlayer> {
     widget.controller._defPlayerState = this;
     if (widget.snapshot == true ||
         (widget.controller.autoPlay == true &&
-            widget.showPlayerWhenZoomIn == true)) {
+            widget.showPlayerWhenZoomIn == true) ||
+        (_zoomOutPlaychewieController != null &&
+            _zoomOutPlaychewieController.videoPlayerController?.dataSource
+                .toLowerCase()
+                .contains(widget.controller.url.toLowerCase()))) {
       _setChewieController();
     }
     _initConnectivity();
@@ -216,7 +220,9 @@ class _DefPlayerState extends State<DefPlayer> {
       if (_allowMobilePlay != true && result == ConnectivityResult.mobile) {
         if (_videoPlayerController.value.initialized) {
           _pause();
-          _play();
+          if (_videoPlayerController?.value?.isPlaying == true) {
+            _play();
+          }
         }
       } else if (result == ConnectivityResult.wifi) {}
     });
@@ -376,14 +382,14 @@ class _DefPlayerState extends State<DefPlayer> {
       if (widget.controller.initMute == true) {
         _chewieController.setVolume(0);
       }
+
+      if (_needFullScreenPlayUrl == widget.controller.url) {
+        needFullScreenPlayUrl = null;
+        _fullScreenPlay();
+      }
     }
     _videoPlayerController?.addListener(_videoPlayerControllerListener);
     setState(() {});
-
-    if (_needFullScreenPlayUrl == widget.controller.url) {
-      needFullScreenPlayUrl = null;
-      _fullScreenPlay();
-    }
 
     _isSetChewieControllering = false;
   }
