@@ -13,12 +13,16 @@ dependencies:
     sdk: flutter
 
   #  视频播放控件
-  chewie: ^0.9.10
+#  chewie: ^0.9.10
 
   # 网络监听
   connectivity: ^0.4.4
 
   event_bus: ^1.1.0
+
+  open_iconic_flutter: ">=0.3.0 <0.4.0"
+  video_player: ">=0.7.0 <0.11.0"
+  wakelock: ">=0.1.2 <0.2.0"
 
   flt_common_views:
     git:

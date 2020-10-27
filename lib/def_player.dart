@@ -7,7 +7,7 @@ import 'package:flt_hc_hub/hud/hc_activity_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
+import 'package:flt_chewie_player/chewie.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:event_bus/event_bus.dart';
 
@@ -56,7 +56,7 @@ class DefPlayerController {
     this.onInitializeChanged,
   }) : urlType = DefPlayerUrlType.network;
 
-  _DefPlayerState _defPlayerState;
+  DefPlayerState _defPlayerState;
 
   dispose() {
     _defPlayerState = null;
@@ -112,16 +112,17 @@ class DefPlayer extends StatefulWidget {
         super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return _DefPlayerState();
+    return DefPlayerState();
   }
 }
 
-class _DefPlayerState extends State<DefPlayer> {
+class DefPlayerState extends State<DefPlayer> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
   bool _isSetChewieControllering = false;
 
-  static ChewieController _zoomOutPlaychewieController;
+  static ChewieController zoomOutPlaychewieController;
+  static DefPlayerState zoomOutDefPlayer;
 
   // 网络监听器
   var _subscription;
@@ -143,8 +144,8 @@ class _DefPlayerState extends State<DefPlayer> {
     if (widget.snapshot == true ||
         (widget.controller.autoPlay == true &&
             widget.showPlayerWhenZoomIn == true) ||
-        (_zoomOutPlaychewieController != null &&
-            _zoomOutPlaychewieController.videoPlayerController?.dataSource
+        (zoomOutPlaychewieController != null &&
+            zoomOutPlaychewieController.videoPlayerController?.dataSource
                 .toLowerCase()
                 .contains(widget.controller.url.toLowerCase()))) {
       _setChewieController();
@@ -163,10 +164,11 @@ class _DefPlayerState extends State<DefPlayer> {
     super.dispose();
     _subscription?.cancel();
     _videoPlayerController?.removeListener(_videoPlayerControllerListener);
-    if (_zoomOutPlaychewieController != null &&
-        _zoomOutPlaychewieController.videoPlayerController?.dataSource
+    if (zoomOutPlaychewieController != null &&
+        zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
             .contains(widget.controller.url.toLowerCase())) {
+      zoomOutDefPlayer = null;
       return;
     }
     _disposeController();
@@ -252,22 +254,26 @@ class _DefPlayerState extends State<DefPlayer> {
                   if (widget.showPlayerWhenZoomIn == false) {
                     _chewieController.pause();
                   }
-                  _zoomOutPlaychewieController = null;
+                  zoomOutPlaychewieController = null;
+                  zoomOutDefPlayer = null;
                 }));
               } else {
                 _delayDisposeController();
                 setState(() {});
                 Future.delayed(Duration(milliseconds: 100), () {
-                  _zoomOutPlaychewieController = null;
+                  zoomOutPlaychewieController = null;
+                  zoomOutDefPlayer = null;
                 });
               }
             } else {
               Future.delayed(Duration(milliseconds: 100), (() {
-                _zoomOutPlaychewieController = null;
+                zoomOutPlaychewieController = null;
+                zoomOutDefPlayer = null;
               }));
             }
           } else {
-            _zoomOutPlaychewieController = _chewieController;
+            zoomOutPlaychewieController = _chewieController;
+            zoomOutDefPlayer = this;
           }
         });
   }
@@ -347,13 +353,14 @@ class _DefPlayerState extends State<DefPlayer> {
       return;
     }
     _isSetChewieControllering = true;
-    if (_zoomOutPlaychewieController != null &&
-        _zoomOutPlaychewieController.videoPlayerController?.dataSource
+    if (zoomOutPlaychewieController != null &&
+        zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
             .contains(widget.controller.url.toLowerCase())) {
+      zoomOutDefPlayer = this;
       _videoPlayerController =
-          _zoomOutPlaychewieController.videoPlayerController;
-      _chewieController = _zoomOutPlaychewieController;
+          zoomOutPlaychewieController.videoPlayerController;
+      _chewieController = zoomOutPlaychewieController;
     } else {
       if (_videoPlayerController == null) {
         await _getVideoPlayerController();

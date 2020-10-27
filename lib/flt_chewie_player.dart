@@ -3,9 +3,9 @@ import 'dart:ui';
 
 import 'package:flutter/services.dart';
 export 'package:video_player/video_player.dart';
-export 'package:chewie/chewie.dart';
+export 'package:flt_chewie_player/chewie.dart';
 
-import 'package:chewie/chewie.dart';
+import 'package:flt_chewie_player/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -50,12 +50,12 @@ class FltChewiePlayer extends StatefulWidget {
   final Function(FltChewiePlayerZoom zoom) onZoomChange;
 
   @override
-  _FltChewiePlayerState createState() {
-    return _FltChewiePlayerState();
+  FltChewiePlayerState createState() {
+    return FltChewiePlayerState();
   }
 }
 
-class _FltChewiePlayerState extends State<FltChewiePlayer>
+class FltChewiePlayerState extends State<FltChewiePlayer>
     with SingleTickerProviderStateMixin {
   bool _isFullScreen = false;
   bool _videoPlayerControllerAddListener = false;
@@ -69,11 +69,11 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
   static const MethodChannel _channel =
       const MethodChannel('flt_chewie_player');
 
-  static _zoomOut() async {
+  static zoomOut() async {
     await _channel.invokeMethod('zoomOut');
   }
 
-  static _zoomIn() async {
+  static zoomIn() async {
     await _channel.invokeMethod('zoomIn');
   }
 
@@ -125,7 +125,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
       _isFullScreen = true;
       if (widget.onZoomChange != null) {
         widget.onZoomChange(FltChewiePlayerZoom.zoomOut);
-        _zoomOut();
+        zoomOut();
       }
     } else if (!widget.controller.isFullScreen && _isFullScreen) {
       _isFullScreen = false;
@@ -136,7 +136,7 @@ class _FltChewiePlayerState extends State<FltChewiePlayer>
       }
       if (widget.onZoomChange != null) {
         widget.onZoomChange(FltChewiePlayerZoom.zoomIn);
-        _zoomIn();
+        // zoomIn();
       }
     }
   }
