@@ -328,19 +328,22 @@ class ChewieController extends ChangeNotifier {
 
   void toggleFullScreen(BuildContext context) {
     _isFullScreen = !_isFullScreen;
-    notifyListeners();
     if (_isFullScreen != true) {
       Navigator.of(context, rootNavigator: true).pop();
       FltChewiePlayerState.zoomIn();
-      Future.delayed(Duration(seconds: 1), () {
+      Future.delayed(Duration(seconds: 500), () {
         if (DefPlayerState.zoomOutDefPlayer == null) {
           DefPlayerState.zoomOutPlaychewieController.pause();
           DefPlayerState.zoomOutPlaychewieController.videoPlayerController
               .dispose();
           DefPlayerState.zoomOutPlaychewieController.dispose();
+        } else {
+          notifyListeners();
         }
         DefPlayerState.zoomOutPlaychewieController = null;
       });
+    } else {
+      notifyListeners();
     }
   }
 
