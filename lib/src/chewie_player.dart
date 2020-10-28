@@ -331,16 +331,16 @@ class ChewieController extends ChangeNotifier {
     if (_isFullScreen != true) {
       Navigator.of(context, rootNavigator: true).pop();
       FltChewiePlayerState.zoomIn();
-      Future.delayed(Duration(seconds: 500), () {
+      Future.delayed(Duration(milliseconds: 500), () {
         if (DefPlayerState.zoomOutDefPlayer == null) {
           DefPlayerState.zoomOutPlaychewieController.pause();
           DefPlayerState.zoomOutPlaychewieController.videoPlayerController
               .dispose();
           DefPlayerState.zoomOutPlaychewieController.dispose();
+          DefPlayerState.zoomOutPlaychewieController = null;
         } else {
           notifyListeners();
         }
-        DefPlayerState.zoomOutPlaychewieController = null;
       });
     } else {
       notifyListeners();

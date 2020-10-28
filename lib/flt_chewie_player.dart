@@ -9,6 +9,7 @@ import 'package:flt_chewie_player/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flt_chewie_player/def_player.dart';
 
 enum FltChewiePlayerZoom {
   zoomIn,
@@ -111,6 +112,9 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   _init() {
     if (widget.controller != null) {
       widget.controller.addListener(_chewieControllerListener);
+      if (widget.controller == DefPlayerState.zoomOutPlaychewieController) {
+        _isFullScreen = true;
+      }
       _videoPlayerControllerInitialized =
           widget.controller?.videoPlayerController?.value?.initialized ?? false;
       if (_videoPlayerControllerInitialized == false &&
