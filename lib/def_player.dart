@@ -63,19 +63,19 @@ class DefPlayerController {
   }
 
   fullScreenPlay() {
-    _defPlayerState._fullScreenPlay();
+    _defPlayerState?._fullScreenPlay();
   }
 
   play() {
-    _defPlayerState._play();
+    _defPlayerState?._play();
   }
 
   pause() {
-    _defPlayerState._pause();
+    _defPlayerState?._pause();
   }
 
   setVolume(double volume) {
-    _defPlayerState._setVolume(volume);
+    _defPlayerState?._setVolume(volume);
   }
 }
 
@@ -181,11 +181,11 @@ class DefPlayerState extends State<DefPlayer> {
   _disposeController() {
     _videoPlayerController?.pause();
     _videoPlayerController?.dispose();
-    _chewieController = null;
-    _chewieController?.dispose();
     _videoPlayerController = null;
+    _chewieController?.dispose();
+    _chewieController = null;
     _isSetChewieControllering == false;
-    if (_needFullScreenPlayUrl == widget.controller.url) {
+    if (_needFullScreenPlayUrl == widget.controller?.url) {
       needFullScreenPlayUrl = null;
     }
   }
@@ -193,25 +193,25 @@ class DefPlayerState extends State<DefPlayer> {
   _delayDisposeController() {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
-    chewieController.pause();
+    chewieController?.pause();
     _chewieController = null;
     _videoPlayerController = null;
     _isSetChewieControllering == false;
-    if (_needFullScreenPlayUrl == widget.controller.url) {
+    if (_needFullScreenPlayUrl == widget.controller?.url) {
       needFullScreenPlayUrl = null;
     }
     Future.delayed(Duration(seconds: 3), (() {
-      videoPlayerController.dispose();
-      chewieController.dispose();
+      videoPlayerController?.dispose();
+      chewieController?.dispose();
     }));
   }
 
   @override
   void didUpdateWidget(DefPlayer oldWidget) {
-    if (oldWidget.controller != widget.controller) {
-      widget.controller._defPlayerState = this;
+    if (oldWidget?.controller != widget?.controller) {
+      widget?.controller?._defPlayerState = this;
     }
-    if (oldWidget.controller.url != widget.controller.url) {
+    if (oldWidget?.controller?.url != widget?.controller?.url) {
       _delayDisposeController();
       _setChewieController();
     }
@@ -264,7 +264,7 @@ class DefPlayerState extends State<DefPlayer> {
                 _chewieController.play();
                 Future.delayed(Duration(milliseconds: 100), (() {
                   if (widget.showPlayerWhenZoomIn == false) {
-                    _chewieController.pause();
+                    _chewieController?.pause();
                   }
                   zoomOutPlaychewieController = null;
                   zoomOutDefPlayer = null;
@@ -290,13 +290,16 @@ class DefPlayerState extends State<DefPlayer> {
 
   _buildZoomInWidget() {
     return GestureDetector(
-      onTap: () {
-        if (widget.zoomInWidgetTap == ZoomInWidgetTap.fullScreenPlay) {
-          _fullScreenPlay();
-        } else if (widget.zoomInWidgetTap == ZoomInWidgetTap.play) {
-          _play();
-        }
-      },
+      onTap: (widget.zoomInWidgetTap == null ||
+              widget.zoomInWidgetTap == ZoomInWidgetTap.none)
+          ? null
+          : () {
+              if (widget.zoomInWidgetTap == ZoomInWidgetTap.fullScreenPlay) {
+                _fullScreenPlay();
+              } else if (widget.zoomInWidgetTap == ZoomInWidgetTap.play) {
+                _play();
+              }
+            },
       child: Stack(
         children: <Widget>[
           widget.zoomInWidget ??
