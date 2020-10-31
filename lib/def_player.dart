@@ -13,7 +13,10 @@ import 'package:event_bus/event_bus.dart';
 
 var defPlayerEventBus = EventBus();
 
-class DefPlayerEventBusEvent {}
+class DefPlayerEventBusEvent {
+  bool stopAllDefPlayer;
+  DefPlayerEventBusEvent({this.stopAllDefPlayer});
+}
 
 enum DefPlayerUrlType {
   file,
@@ -155,6 +158,9 @@ class DefPlayerState extends State<DefPlayer> {
     defPlayerEventBus
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
+      if (data.stopAllDefPlayer == true) {
+        _delayDisposeController();
+      }
       setState(() {});
     });
   }
@@ -188,6 +194,7 @@ class DefPlayerState extends State<DefPlayer> {
     if (_needFullScreenPlayUrl == widget.controller?.url) {
       needFullScreenPlayUrl = null;
     }
+    _initializeStatus = null;
   }
 
   _delayDisposeController() {
@@ -200,6 +207,7 @@ class DefPlayerState extends State<DefPlayer> {
     if (_needFullScreenPlayUrl == widget.controller?.url) {
       needFullScreenPlayUrl = null;
     }
+    _initializeStatus = null;
     Future.delayed(Duration(seconds: 3), (() {
       videoPlayerController?.dispose();
       chewieController?.dispose();
