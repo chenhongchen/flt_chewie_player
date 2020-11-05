@@ -96,6 +96,7 @@ class DefPlayer extends StatefulWidget {
   final ZoomInWidgetTap zoomInWidgetTap;
   final Color loadColor;
   final bool snapshot;
+  final bool showControlsOnInitialize;
   DefPlayer({
     Key key,
     this.controller,
@@ -111,6 +112,7 @@ class DefPlayer extends StatefulWidget {
     this.zoomInWidgetTap = ZoomInWidgetTap.fullScreenPlay,
     this.loadColor = CupertinoColors.inactiveGray,
     this.snapshot = true,
+    this.showControlsOnInitialize = false,
   })  : assert(controller != null, 'You must provide a DefPlayerController'),
         super(key: key);
   @override
@@ -398,6 +400,7 @@ class DefPlayerState extends State<DefPlayer> {
         aspectRatio: aspectRatio,
         autoPlay: widget.controller.autoPlay == true,
         looping: widget.controller.looping,
+        showControlsOnInitialize: widget.showControlsOnInitialize,
         errorBuilder: (context, errorMessage) {
           return Center(
             child: Text(
