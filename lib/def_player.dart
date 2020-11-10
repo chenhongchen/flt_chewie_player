@@ -470,7 +470,8 @@ class DefPlayerState extends State<DefPlayer> {
     if (widget.controller?.urlType == DefPlayerUrlType.network &&
         _allowMobilePlay != true &&
         _connectivityResult == ConnectivityResult.mobile) {
-      showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
+      showAlert(context, msg: '正处于移动数据网络，是否继续播放？', rightTitle: '继续播放',
+          rightOnTap: () {
         _allowMobilePlay = true;
         if (_chewieController == null) {
           _setChewieController();
@@ -499,7 +500,8 @@ class DefPlayerState extends State<DefPlayer> {
     if (widget.controller?.urlType == DefPlayerUrlType.network &&
         _allowMobilePlay != true &&
         _connectivityResult == ConnectivityResult.mobile) {
-      showAlert(context, '正处于移动数据网络，是否继续播放？', '', '取消', '继续播放', rightOnTap: () {
+      showAlert(context, msg: '正处于移动数据网络，是否继续播放？', rightTitle: '继续播放',
+          rightOnTap: () {
         _allowMobilePlay = true;
         _startPlay();
       });
