@@ -479,7 +479,7 @@ class DefPlayerState extends State<DefPlayer> {
           return;
         }
         _startPlay();
-        Future.delayed(Duration(milliseconds: 100), () {
+        Future.delayed(Duration(milliseconds: 150), () {
           _chewieController.enterFullScreen();
         });
       });
@@ -490,7 +490,7 @@ class DefPlayerState extends State<DefPlayer> {
         return;
       }
       _startPlay();
-      Future.delayed(Duration(milliseconds: 100), () {
+      Future.delayed(Duration(milliseconds: 150), () {
         _chewieController.enterFullScreen();
       });
     }
