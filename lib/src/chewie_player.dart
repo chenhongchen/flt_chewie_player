@@ -80,12 +80,25 @@ class ChewieState extends State<Chewie> {
       BuildContext context,
       Animation<double> animation,
       _ChewieControllerProvider controllerProvider) {
+    double lastDownY;
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      body: Container(
-        alignment: Alignment.center,
-        color: Colors.black,
-        child: controllerProvider,
+      body: Listener(
+        onPointerDown: (dowPointEvent) {
+          lastDownY = dowPointEvent.position.dy;
+        },
+        onPointerMove: (movePointEvent) {
+          var position = movePointEvent.position.dy;
+          var detal = position - lastDownY;
+          if (detal > 50) {
+            controllerProvider.controller.toggleFullScreen(context);
+          }
+        },
+        child: Container(
+          alignment: Alignment.center,
+          color: Colors.black,
+          child: controllerProvider,
+        ),
       ),
     );
   }

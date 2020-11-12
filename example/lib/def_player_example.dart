@@ -47,6 +47,12 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
           Container(
             width: width,
             height: height,
+            color: Colors.deepOrangeAccent,
+          ),
+          SizedBox(height: 15),
+          Container(
+            width: width,
+            height: height,
             color: Colors.brown,
           ),
           SizedBox(height: 15),
