@@ -132,6 +132,7 @@ class ChewieState extends State<Chewie> {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
+        DeviceOrientation.portraitUp,
       ]);
     }
 
@@ -331,18 +332,21 @@ class ChewieController extends ChangeNotifier {
     _isFullScreen = !_isFullScreen;
     // chc 改
     if (_isFullScreen != true) {
-      Navigator.of(context, rootNavigator: true).pop();
       FltChewiePlayerState.zoomIn();
-      Future.delayed(Duration(milliseconds: 1000), () {
-        if (DefPlayerState.zoomOutDefPlayer == null) {
-          DefPlayerState.zoomOutPlaychewieController?.pause();
-          DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
-              ?.dispose();
-          DefPlayerState.zoomOutPlaychewieController?.dispose();
-          DefPlayerState.zoomOutPlaychewieController = null;
-        } else {
-          notifyListeners();
-        }
+      int time = Theme.of(context).platform == TargetPlatform.android ? 0 : 300;
+      Future.delayed(Duration(milliseconds: time), () {
+        Navigator.of(context, rootNavigator: true).pop();
+        Future.delayed(Duration(milliseconds: 1000), () {
+          if (DefPlayerState.zoomOutDefPlayer == null) {
+            DefPlayerState.zoomOutPlaychewieController?.pause();
+            DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
+                ?.dispose();
+            DefPlayerState.zoomOutPlaychewieController?.dispose();
+            DefPlayerState.zoomOutPlaychewieController = null;
+          } else {
+            notifyListeners();
+          }
+        });
       });
     } else {
       notifyListeners();
