@@ -331,9 +331,9 @@ class ChewieController extends ChangeNotifier {
     _isFullScreen = !_isFullScreen;
     // chc 改
     if (_isFullScreen != true) {
-      FltChewiePlayerState.zoomIn();
       Navigator.of(context, rootNavigator: true).pop();
-      Future.delayed(Duration(milliseconds: 500), () {
+      FltChewiePlayerState.zoomIn();
+      Future.delayed(Duration(milliseconds: 1000), () {
         if (DefPlayerState.zoomOutDefPlayer == null) {
           DefPlayerState.zoomOutPlaychewieController?.pause();
           DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
