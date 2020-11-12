@@ -1,4 +1,3 @@
-import 'package:flt_chewie_player/flt_chewie_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flt_chewie_player/def_player.dart';
@@ -37,28 +36,49 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
       appBar: AppBar(
         title: const Text('DefPlayerExample'),
       ),
-      body: Center(
-        child: DefPlayer(
-          width: width,
-          height: height,
-          controller: _controller,
-          showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
-          zoominWidgetAnimation: true,
-          blurBackground: true,
-          snapshot: true,
-          zoomInWidget: GestureDetector(
-            onTap: _onTapPlayer,
-            child: Container(
-              color: Colors.red,
+      body: ListView(
+        children: <Widget>[
+          Container(
+            width: width,
+            height: height,
+            color: Colors.purple,
+          ),
+          SizedBox(height: 15),
+          Container(
+            width: width,
+            height: height,
+            color: Colors.brown,
+          ),
+          SizedBox(height: 15),
+          DefPlayer(
+            width: width,
+            height: height,
+            controller: _controller,
+            showPlayerWhenZoomIn: _showPlayerWhenZoomIn,
+            zoominWidgetAnimation: true,
+            blurBackground: true,
+            snapshot: false,
+            zoomInWidget: GestureDetector(
+              onTap: _onTapPlayer,
+              child: Container(
+                color: Colors.red,
+              ),
+            ),
+            playerIcon: GestureDetector(
+              onTap: _onTapPlayer,
+              child: Center(
+                child: Image.asset('images/play.png'),
+              ),
             ),
           ),
-          playerIcon: GestureDetector(
-            onTap: _onTapPlayer,
-            child: Center(
-              child: Image.asset('images/play.png'),
-            ),
+          SizedBox(height: 15),
+          Container(
+            width: width,
+            height: height,
+            color: Colors.blue,
           ),
-        ),
+          SizedBox(height: 15),
+        ],
       ),
     );
   }

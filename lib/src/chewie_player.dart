@@ -141,7 +141,8 @@ class ChewieState extends State<Chewie> {
 
     await Navigator.of(context, rootNavigator: true).push(route);
     _isFullScreen = false;
-    widget.controller.exitFullScreen();
+    // chc 改 （注释）
+    // widget.controller.exitFullScreen();
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
@@ -328,21 +329,20 @@ class ChewieController extends ChangeNotifier {
 
   void toggleFullScreen(BuildContext context) {
     _isFullScreen = !_isFullScreen;
+    // chc 改
     if (_isFullScreen != true) {
       FltChewiePlayerState.zoomIn();
-      Future.delayed(Duration(milliseconds: 100), () {
-        Navigator.of(context, rootNavigator: true).pop();
-        Future.delayed(Duration(milliseconds: 500), () {
-          if (DefPlayerState.zoomOutDefPlayer == null) {
-            DefPlayerState.zoomOutPlaychewieController?.pause();
-            DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
-                ?.dispose();
-            DefPlayerState.zoomOutPlaychewieController?.dispose();
-            DefPlayerState.zoomOutPlaychewieController = null;
-          } else {
-            notifyListeners();
-          }
-        });
+      Navigator.of(context, rootNavigator: true).pop();
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (DefPlayerState.zoomOutDefPlayer == null) {
+          DefPlayerState.zoomOutPlaychewieController?.pause();
+          DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
+              ?.dispose();
+          DefPlayerState.zoomOutPlaychewieController?.dispose();
+          DefPlayerState.zoomOutPlaychewieController = null;
+        } else {
+          notifyListeners();
+        }
       });
     } else {
       notifyListeners();

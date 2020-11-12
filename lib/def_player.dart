@@ -286,10 +286,10 @@ class DefPlayerState extends State<DefPlayer> {
                 setState(() {});
               }
             } else {
-              Future.delayed(Duration(milliseconds: 100), (() {
-                zoomOutPlaychewieController = null;
-                zoomOutDefPlayer = null;
-              }));
+              // Future.delayed(Duration(milliseconds: 100), (() {
+              zoomOutPlaychewieController = null;
+              zoomOutDefPlayer = null;
+              // }));
             }
           } else {
             zoomOutPlaychewieController = _chewieController;
