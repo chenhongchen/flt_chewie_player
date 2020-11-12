@@ -356,8 +356,8 @@ class ChewieController extends ChangeNotifier {
   }
 
   _pod(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
-    Future.delayed(Duration(milliseconds: 500), () {
+    Navigator.of(context, rootNavigator: false).pop();
+    Future.delayed(Duration(milliseconds: 700), () {
       if (DefPlayerState.zoomOutDefPlayer == null) {
         DefPlayerState.zoomOutPlaychewieController?.pause();
         DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
