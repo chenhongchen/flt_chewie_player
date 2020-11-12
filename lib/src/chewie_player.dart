@@ -81,6 +81,7 @@ class ChewieState extends State<Chewie> {
       Animation<double> animation,
       _ChewieControllerProvider controllerProvider) {
     double lastDownY;
+    bool hasExit = false;
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Listener(
@@ -88,10 +89,14 @@ class ChewieState extends State<Chewie> {
           lastDownY = dowPointEvent.position.dy;
         },
         onPointerMove: (movePointEvent) {
+          if (hasExit == true) {
+            return;
+          }
           var position = movePointEvent.position.dy;
           var detal = position - lastDownY;
           if (detal > 50) {
-            controllerProvider.controller.toggleFullScreen(context);
+            controllerProvider.controller.exitFullScreen(context);
+            hasExit = true;
           }
         },
         child: Container(
@@ -337,34 +342,39 @@ class ChewieController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void exitFullScreen() {
+  void exitFullScreen(BuildContext context) {
     _isFullScreen = false;
-    notifyListeners();
+    // notifyListeners();
+    _podFullScreen(context);
   }
 
   void toggleFullScreen(BuildContext context) async {
     _isFullScreen = !_isFullScreen;
     // chc 改
     if (_isFullScreen != true) {
-      bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-      int time = 0;
-      if (isIOS == true) {
-        Map map = await FltChewiePlayerState.zoomIn();
-        String orientation = map['orientation'];
-        time = 300;
-        if (orientation == 'portraitUp') {
-          time = 0;
-        }
-      }
-      if (time > 0) {
-        Future.delayed(Duration(milliseconds: time), () {
-          _pod(context);
-        });
-      } else {
-        _pod(context);
-      }
+      _podFullScreen(context);
     } else {
       notifyListeners();
+    }
+  }
+
+  _podFullScreen(BuildContext context) async {
+    bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    int time = 0;
+    if (isIOS == true) {
+      Map map = await FltChewiePlayerState.zoomIn();
+      String orientation = map['orientation'];
+      time = 300;
+      if (orientation == 'portraitUp') {
+        time = 0;
+      }
+    }
+    if (time > 0) {
+      Future.delayed(Duration(milliseconds: time), () {
+        _pod(context);
+      });
+    } else {
+      _pod(context);
     }
   }
 
