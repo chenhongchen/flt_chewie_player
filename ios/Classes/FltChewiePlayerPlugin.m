@@ -16,12 +16,29 @@
         result(@{});
     }
     else if ([@"zoomIn" isEqualToString:call.method]) {
+        NSString *orientation = [self getOrientation];
         [UIResponder setUseAppRotationMethod:NO];
-        result(@{});
+        result(@{@"orientation" : orientation});
     }
     else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+- (NSString *)getOrientation
+{
+    UIInterfaceOrientation curOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    NSString *orientation = @"portraitUp";
+    if (curOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+        orientation = @"portraitDown";
+    }
+    else if (curOrientation == UIInterfaceOrientationLandscapeLeft) {
+        orientation = @"landscapeLeft";
+    }
+    else if (curOrientation == UIInterfaceOrientationLandscapeRight) {
+        orientation = @"landscapeRight";
+    }
+    return orientation;
 }
 
 @end

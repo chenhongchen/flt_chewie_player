@@ -136,9 +136,10 @@ class ChewieState extends State<Chewie> {
       ]);
     }
 
-    if (!widget.controller.allowedScreenSleep) {
-      Wakelock.enable();
-    }
+    // chc 改 注释
+    // if (!widget.controller.allowedScreenSleep) {
+    //   Wakelock.enable();
+    // }
 
     await Navigator.of(context, rootNavigator: true).push(route);
     _isFullScreen = false;
@@ -147,7 +148,7 @@ class ChewieState extends State<Chewie> {
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
-    Wakelock.disable();
+    // Wakelock.disable();
 
     SystemChrome.setEnabledSystemUIOverlays(
         widget.controller.systemOverlaysAfterFullScreen);
@@ -328,29 +329,45 @@ class ChewieController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFullScreen(BuildContext context) {
+  void toggleFullScreen(BuildContext context) async {
     _isFullScreen = !_isFullScreen;
     // chc 改
     if (_isFullScreen != true) {
-      FltChewiePlayerState.zoomIn();
-      int time = Theme.of(context).platform == TargetPlatform.android ? 0 : 300;
-      Future.delayed(Duration(milliseconds: time), () {
-        Navigator.of(context, rootNavigator: true).pop();
-        Future.delayed(Duration(milliseconds: 1000), () {
-          if (DefPlayerState.zoomOutDefPlayer == null) {
-            DefPlayerState.zoomOutPlaychewieController?.pause();
-            DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
-                ?.dispose();
-            DefPlayerState.zoomOutPlaychewieController?.dispose();
-            DefPlayerState.zoomOutPlaychewieController = null;
-          } else {
-            notifyListeners();
-          }
+      bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+      int time = 0;
+      if (isIOS == true) {
+        Map map = await FltChewiePlayerState.zoomIn();
+        String orientation = map['orientation'];
+        time = 300;
+        if (orientation == 'portraitUp') {
+          time = 0;
+        }
+      }
+      if (time > 0) {
+        Future.delayed(Duration(milliseconds: time), () {
+          _pod(context);
         });
-      });
+      } else {
+        _pod(context);
+      }
     } else {
       notifyListeners();
     }
+  }
+
+  _pod(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (DefPlayerState.zoomOutDefPlayer == null) {
+        DefPlayerState.zoomOutPlaychewieController?.pause();
+        DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
+            ?.dispose();
+        DefPlayerState.zoomOutPlaychewieController?.dispose();
+        DefPlayerState.zoomOutPlaychewieController = null;
+      } else {
+        notifyListeners();
+      }
+    });
   }
 
   Future<void> play() async {

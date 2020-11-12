@@ -70,12 +70,12 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   static const MethodChannel _channel =
       const MethodChannel('flt_chewie_player');
 
-  static zoomOut() async {
-    await _channel.invokeMethod('zoomOut');
+  static Future<dynamic> zoomOut() async {
+    return await _channel.invokeMethod('zoomOut');
   }
 
-  static zoomIn() async {
-    await _channel.invokeMethod('zoomIn');
+  static Future<dynamic> zoomIn() async {
+    return await _channel.invokeMethod('zoomIn');
   }
 
   @override

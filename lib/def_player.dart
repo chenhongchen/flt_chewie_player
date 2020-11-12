@@ -10,6 +10,7 @@ import 'package:video_player/video_player.dart';
 import 'package:flt_chewie_player/chewie.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:wakelock/wakelock.dart';
 
 var defPlayerEventBus = EventBus();
 
@@ -145,6 +146,7 @@ class DefPlayerState extends State<DefPlayer> {
   @override
   void initState() {
     super.initState();
+    Wakelock.enable();
     widget.controller._defPlayerState = this;
     if (widget.snapshot == true ||
         (widget.controller.autoPlay == true &&
@@ -400,6 +402,7 @@ class DefPlayerState extends State<DefPlayer> {
         aspectRatio: aspectRatio,
         autoPlay: widget.controller.autoPlay == true,
         looping: widget.controller.looping,
+        allowedScreenSleep: false,
         showControlsOnInitialize: widget.showControlsOnInitialize,
         errorBuilder: (context, errorMessage) {
           return Center(
