@@ -132,8 +132,10 @@ class ChewieState extends State<Chewie> {
     );
 
     if (widget.controller.routePageBuilder == null) {
+      // chc 改 加动画
       return Hero(
-        tag: 'hero_chewie',
+        tag:
+            'hero_chewie_${widget.controller.videoPlayerController.dataSource}',
         child: _defaultRoutePageBuilder(
             context, animation, secondaryAnimation, controllerProvider),
       );
