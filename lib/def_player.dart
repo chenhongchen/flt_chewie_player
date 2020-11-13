@@ -15,8 +15,9 @@ import 'package:wakelock/wakelock.dart';
 var defPlayerEventBus = EventBus();
 
 class DefPlayerEventBusEvent {
-  bool stopAllDefPlayer;
-  DefPlayerEventBusEvent({this.stopAllDefPlayer});
+  final bool stopAllDefPlayer;
+  final String startFullScreenUrl;
+  DefPlayerEventBusEvent({this.stopAllDefPlayer, this.startFullScreenUrl});
 }
 
 enum DefPlayerUrlType {
@@ -125,7 +126,6 @@ class DefPlayer extends StatefulWidget {
 class DefPlayerState extends State<DefPlayer> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
-  bool _isSetChewieControllering = false;
 
   static ChewieController zoomOutPlaychewieController;
   static DefPlayerState zoomOutDefPlayer;
@@ -163,7 +163,11 @@ class DefPlayerState extends State<DefPlayer> {
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
       if (data.stopAllDefPlayer == true) {
-        _delayDisposeController();
+        _delayDisposeController(sec: 0);
+      }
+      if (data.startFullScreenUrl != null &&
+          data.startFullScreenUrl != widget.controller.url) {
+        _delayDisposeController(sec: 0);
       }
       setState(() {});
     });
@@ -194,25 +198,23 @@ class DefPlayerState extends State<DefPlayer> {
     _videoPlayerController = null;
     _chewieController?.dispose();
     _chewieController = null;
-    _isSetChewieControllering == false;
     if (_needFullScreenPlayUrl == widget.controller?.url) {
       needFullScreenPlayUrl = null;
     }
     _initializeStatus = null;
   }
 
-  _delayDisposeController() {
+  _delayDisposeController({int sec = 1}) {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
     chewieController?.pause();
     _chewieController = null;
     _videoPlayerController = null;
-    _isSetChewieControllering == false;
     if (_needFullScreenPlayUrl == widget.controller?.url) {
       needFullScreenPlayUrl = null;
     }
     _initializeStatus = null;
-    Future.delayed(Duration(seconds: 3), (() {
+    Future.delayed(Duration(seconds: sec), (() {
       videoPlayerController?.dispose();
       chewieController?.dispose();
     }));
@@ -374,10 +376,9 @@ class DefPlayerState extends State<DefPlayer> {
   }
 
   _setChewieController() async {
-    if (_isSetChewieControllering == true) {
+    if (_initializeStatus == InitializeStatus.start) {
       return;
     }
-    _isSetChewieControllering = true;
     if (zoomOutPlaychewieController != null &&
         zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
@@ -391,7 +392,6 @@ class DefPlayerState extends State<DefPlayer> {
         await _getVideoPlayerController();
       }
       if (_videoPlayerController == null) {
-        _isSetChewieControllering = false;
         return;
       }
       var aspectRatio = _videoPlayerController.value.aspectRatio;
@@ -423,8 +423,6 @@ class DefPlayerState extends State<DefPlayer> {
     }
     _videoPlayerController?.addListener(_videoPlayerControllerListener);
     setState(() {});
-
-    _isSetChewieControllering = false;
   }
 
   _getVideoPlayerController() async {
@@ -469,6 +467,8 @@ class DefPlayerState extends State<DefPlayer> {
     if (_needFullScreenPlayUrl == widget.controller.url) {
       return;
     }
+    defPlayerEventBus.fire(
+        DefPlayerEventBusEvent(startFullScreenUrl: widget.controller.url));
     if (widget.controller?.urlType == DefPlayerUrlType.network &&
         _allowMobilePlay != true &&
         _connectivityResult == ConnectivityResult.mobile) {
