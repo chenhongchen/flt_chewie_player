@@ -418,8 +418,7 @@ class DefPlayerState extends State<DefPlayer> {
       }
 
       if (_needFullScreenPlayUrl == widget.controller.url) {
-        needFullScreenPlayUrl = null;
-        _fullScreenPlay();
+        _startFullScreenPlay();
       }
     }
     _videoPlayerController?.addListener(_videoPlayerControllerListener);
@@ -476,27 +475,24 @@ class DefPlayerState extends State<DefPlayer> {
       showAlert(context, msg: '正处于移动数据网络，是否继续播放？', rightTitle: '继续播放',
           rightOnTap: () {
         _allowMobilePlay = true;
-        if (_chewieController == null) {
-          _setChewieController();
-          needFullScreenPlayUrl = widget.controller.url;
-          return;
-        }
-        _startPlay();
-        Future.delayed(Duration(milliseconds: 150), () {
-          _chewieController.enterFullScreen();
-        });
+        _startFullScreenPlay();
       });
     } else {
-      if (_chewieController == null) {
-        _setChewieController();
-        needFullScreenPlayUrl = widget.controller.url;
-        return;
-      }
-      _startPlay();
-      Future.delayed(Duration(milliseconds: 150), () {
-        _chewieController.enterFullScreen();
-      });
+      _startFullScreenPlay();
     }
+  }
+
+  _startFullScreenPlay() {
+    if (_chewieController == null) {
+      _setChewieController();
+      needFullScreenPlayUrl = widget.controller.url;
+      return;
+    }
+    _startPlay();
+    needFullScreenPlayUrl = null;
+    Future.delayed(Duration(milliseconds: 150), () {
+      _chewieController.enterFullScreen();
+    });
   }
 
   _play() async {
