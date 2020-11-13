@@ -255,16 +255,22 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
               ),
               child: Container(
                 color: Colors.black.withOpacity(0.4),
-                child: Chewie(
-                  controller: widget.controller,
+                child: Hero(
+                  tag: 'hero_chewie',
+                  child: Chewie(
+                    controller: widget.controller,
+                  ),
                 ),
               ),
             ),
           )
         : Container(
             color: Colors.black,
-            child: Chewie(
-              controller: widget.controller,
+            child: Hero(
+              tag: 'hero_chewie',
+              child: Chewie(
+                controller: widget.controller,
+              ),
             ),
           );
   }

@@ -132,8 +132,30 @@ class ChewieState extends State<Chewie> {
     );
 
     if (widget.controller.routePageBuilder == null) {
-      return _defaultRoutePageBuilder(
-          context, animation, secondaryAnimation, controllerProvider);
+      return Hero(
+        tag: 'hero_chewie',
+        child: _defaultRoutePageBuilder(
+            context, animation, secondaryAnimation, controllerProvider),
+      );
+      // return FadeTransition(
+      //   // 从0开始到1
+      //   opacity: Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      //     // 传入设置的动画
+      //     parent: animation,
+      //     // 设置效果，快进漫出   这里有很多内置的效果
+      //     curve: Curves.fastOutSlowIn,
+      //   )),
+      //   child: _defaultRoutePageBuilder(
+      //       context, animation, secondaryAnimation, controllerProvider),
+      // );
+      // return ScaleTransition(
+      //   scale: Tween(begin: 0.0, end: 1.0).animate(
+      //       CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn)),
+      //   child: _defaultRoutePageBuilder(
+      //       context, animation, secondaryAnimation, controllerProvider),
+      // );
+      // return _defaultRoutePageBuilder(
+      //     context, animation, secondaryAnimation, controllerProvider);
     }
     return widget.controller.routePageBuilder(
         context, animation, secondaryAnimation, controllerProvider);
