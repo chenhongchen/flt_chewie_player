@@ -163,7 +163,7 @@ class DefPlayerState extends State<DefPlayer> {
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
       if (data.stopAllDefPlayer == true) {
-        _disposeController();
+        _delayDisposeController(sec: 0);
       }
       if (data.startFullScreenUrl != null &&
           data.startFullScreenUrl != widget.controller.url) {
@@ -189,7 +189,8 @@ class DefPlayerState extends State<DefPlayer> {
       zoomOutPlaychewieController = null;
     }
 
-    _disposeController();
+    _delayDisposeController();
+    // _disposeController();
   }
 
   _disposeController() {
