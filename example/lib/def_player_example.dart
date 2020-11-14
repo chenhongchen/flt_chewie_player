@@ -16,7 +16,7 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   void initState() {
     _controller = DefPlayerController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-      autoPlay: false,
+      autoPlay: true,
       initMute: false,
     );
     super.initState();

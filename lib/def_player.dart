@@ -155,7 +155,9 @@ class DefPlayerState extends State<DefPlayer> {
             zoomOutPlaychewieController.videoPlayerController?.dataSource
                 .toLowerCase()
                 .contains(widget.controller.url.toLowerCase()))) {
-      _setChewieController();
+      Future.delayed(Duration(milliseconds: 1000), () {
+        _setChewieController();
+      });
     }
     _initConnectivity();
 
@@ -163,11 +165,11 @@ class DefPlayerState extends State<DefPlayer> {
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
       if (data.stopAllDefPlayer == true) {
-        _delayDisposeController();
+        _delayDisposeController(milliseconds: 0);
       }
       if (data.startFullScreenUrl != null &&
           data.startFullScreenUrl != widget.controller.url) {
-        _delayDisposeController();
+        _delayDisposeController(milliseconds: 0);
       }
       setState(() {});
     });
@@ -189,8 +191,7 @@ class DefPlayerState extends State<DefPlayer> {
       zoomOutPlaychewieController = null;
     }
 
-    _delayDisposeController(canSetState: false);
-    // _disposeController();
+    _disposeController();
   }
 
   _disposeController() {
@@ -205,7 +206,7 @@ class DefPlayerState extends State<DefPlayer> {
     _initializeStatus = null;
   }
 
-  _delayDisposeController({int milliseconds = 100, bool canSetState = true}) {
+  _delayDisposeController({int milliseconds = 1000, bool canSetState = true}) {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
     chewieController?.pause();
@@ -290,7 +291,7 @@ class DefPlayerState extends State<DefPlayer> {
               } else {
                 zoomOutPlaychewieController = null;
                 zoomOutDefPlayer = null;
-                _delayDisposeController(milliseconds: 1000);
+                _delayDisposeController();
                 setState(() {});
               }
             } else {
