@@ -150,12 +150,8 @@ class DefPlayerState extends State<DefPlayer> {
     widget.controller._defPlayerState = this;
     if (widget.snapshot == true ||
         (widget.controller.autoPlay == true &&
-            widget.showPlayerWhenZoomIn == true) ||
-        (zoomOutPlaychewieController != null &&
-            zoomOutPlaychewieController.videoPlayerController?.dataSource
-                .toLowerCase()
-                .contains(widget.controller.url.toLowerCase()))) {
-      Future.delayed(Duration(milliseconds: 1000), () {
+            widget.showPlayerWhenZoomIn == true)) {
+      Future.delayed(Duration(milliseconds: 500), () {
         _setChewieController();
       });
     }
@@ -165,11 +161,11 @@ class DefPlayerState extends State<DefPlayer> {
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
       if (data.stopAllDefPlayer == true) {
-        _delayDisposeController(milliseconds: 500);
+        _delayDisposeController(milliseconds: 100);
       }
       if (data.startFullScreenUrl != null &&
           data.startFullScreenUrl != widget.controller.url) {
-        _delayDisposeController(milliseconds: 500);
+        _delayDisposeController(milliseconds: 100);
       }
     });
   }
