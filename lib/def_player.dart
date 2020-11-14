@@ -163,7 +163,7 @@ class DefPlayerState extends State<DefPlayer> {
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
       if (data.stopAllDefPlayer == true) {
-        _delayDisposeController(sec: 1);
+        _disposeController();
       }
       if (data.startFullScreenUrl != null &&
           data.startFullScreenUrl != widget.controller.url) {

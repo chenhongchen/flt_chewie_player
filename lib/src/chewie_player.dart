@@ -183,7 +183,7 @@ class ChewieState extends State<Chewie> {
     //   Wakelock.enable();
     // }
 
-    await Navigator.of(context, rootNavigator: false).push(route);
+    await Navigator.of(context, rootNavigator: true).push(route);
     _isFullScreen = false;
     // chc 改 （注释）
     // widget.controller.exitFullScreen();
