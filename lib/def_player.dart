@@ -165,11 +165,11 @@ class DefPlayerState extends State<DefPlayer> {
         .on<DefPlayerEventBusEvent>()
         .listen((DefPlayerEventBusEvent data) {
       if (data.stopAllDefPlayer == true) {
-        _delayDisposeController(milliseconds: 0);
+        _delayDisposeController(milliseconds: 500);
       }
       if (data.startFullScreenUrl != null &&
           data.startFullScreenUrl != widget.controller.url) {
-        _delayDisposeController(milliseconds: 0);
+        _delayDisposeController(milliseconds: 500);
       }
       setState(() {});
     });
@@ -206,7 +206,7 @@ class DefPlayerState extends State<DefPlayer> {
     _initializeStatus = null;
   }
 
-  _delayDisposeController({int milliseconds = 1000, bool canSetState = true}) {
+  _delayDisposeController({int milliseconds = 2000, bool canSetState = true}) {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
     chewieController?.pause();
