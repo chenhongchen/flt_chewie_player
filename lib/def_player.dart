@@ -189,7 +189,7 @@ class DefPlayerState extends State<DefPlayer> {
       zoomOutPlaychewieController = null;
     }
 
-    _delayDisposeController();
+    _delayDisposeController(canSetState: false);
     // _disposeController();
   }
 
@@ -205,7 +205,7 @@ class DefPlayerState extends State<DefPlayer> {
     _initializeStatus = null;
   }
 
-  _delayDisposeController({int sec = 1}) {
+  _delayDisposeController({int sec = 3, bool canSetState = true}) {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
     chewieController?.pause();
@@ -215,6 +215,9 @@ class DefPlayerState extends State<DefPlayer> {
       needFullScreenPlayUrl = null;
     }
     _initializeStatus = null;
+    if (mounted == true && canSetState == true) {
+      setState(() {});
+    }
     Future.delayed(Duration(seconds: sec), (() {
       videoPlayerController?.dispose();
       chewieController?.dispose();
