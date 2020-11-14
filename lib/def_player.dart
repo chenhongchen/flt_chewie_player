@@ -347,9 +347,7 @@ class DefPlayerState extends State<DefPlayer> {
             right: 0,
             top: 0,
             bottom: 0,
-            child: widget.playerIcon == null ||
-                    _needFullScreenPlayUrl == widget.controller.url ||
-                    (widget.showPlayerWhenZoomIn && _initializeStatus != null)
+            child: widget.playerIcon == null || _initializeStatus != null
                 ? Container()
                 : widget.playerIcon,
           ),
@@ -360,9 +358,7 @@ class DefPlayerState extends State<DefPlayer> {
             bottom: 0,
             child: Container(
               child: Center(
-                child: _needFullScreenPlayUrl == widget.controller.url ||
-                        (widget.showPlayerWhenZoomIn &&
-                            _initializeStatus == InitializeStatus.start)
+                child: _initializeStatus == InitializeStatus.start
                     ? HCActivityIndicator(
                         color: widget.loadColor,
                       )
@@ -452,15 +448,23 @@ class DefPlayerState extends State<DefPlayer> {
       widget.controller.onInitializeChanged(_initializeStatus);
     }
     setState(() {});
-    await videoPlayerController.initialize().then((_) {
-      _initializeStatus = InitializeStatus.complete;
-      if (widget.controller?.onInitializeChanged != null) {
-        widget.controller?.onInitializeChanged(_initializeStatus);
-      }
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    await videoPlayerController.initialize();
+    _initializeStatus = InitializeStatus.complete;
+    if (widget.controller?.onInitializeChanged != null) {
+      widget.controller?.onInitializeChanged(_initializeStatus);
+    }
+    if (mounted) {
+      setState(() {});
+    }
+    // await videoPlayerController.initialize().then((_) {
+    //   _initializeStatus = InitializeStatus.complete;
+    //   if (widget.controller?.onInitializeChanged != null) {
+    //     widget.controller?.onInitializeChanged(_initializeStatus);
+    //   }
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // });
   }
 
   _fullScreenPlay() async {
@@ -483,14 +487,18 @@ class DefPlayerState extends State<DefPlayer> {
   }
 
   _startFullScreenPlay() {
-    if (_chewieController == null) {
+    if (_chewieController == null ||
+        _initializeStatus != InitializeStatus.complete ||
+        _videoPlayerController?.value?.initialized != true) {
+      _videoPlayerController?.dispose();
+      _chewieController?.dispose();
       _setChewieController();
       needFullScreenPlayUrl = widget.controller.url;
       return;
     }
     _startPlay();
-    needFullScreenPlayUrl = null;
     Future.delayed(Duration(milliseconds: 150), () {
+      needFullScreenPlayUrl = null;
       _chewieController.enterFullScreen();
     });
   }
