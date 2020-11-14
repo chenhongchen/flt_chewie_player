@@ -388,7 +388,7 @@ class ChewieController extends ChangeNotifier {
     if (isIOS == true) {
       Map map = await FltChewiePlayerState.zoomIn();
       String orientation = map['orientation'];
-      time = 300;
+      time = 700;
       if (orientation == 'portraitUp') {
         time = 0;
       }
@@ -404,7 +404,7 @@ class ChewieController extends ChangeNotifier {
 
   _pod(BuildContext context) {
     Navigator.of(context, rootNavigator: false).pop();
-    Future.delayed(Duration(milliseconds: 700), () {
+    Future.delayed(Duration(milliseconds: 500), () {
       if (DefPlayerState.zoomOutDefPlayer == null) {
         DefPlayerState.zoomOutPlaychewieController?.pause();
         DefPlayerState.zoomOutPlaychewieController?.videoPlayerController

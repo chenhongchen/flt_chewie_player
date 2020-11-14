@@ -150,10 +150,12 @@ class DefPlayerState extends State<DefPlayer> {
     widget.controller._defPlayerState = this;
     if (widget.snapshot == true ||
         (widget.controller.autoPlay == true &&
-            widget.showPlayerWhenZoomIn == true)) {
-      Future.delayed(Duration(milliseconds: 500), () {
-        _setChewieController();
-      });
+            widget.showPlayerWhenZoomIn == true) ||
+        (zoomOutPlaychewieController != null &&
+            zoomOutPlaychewieController.videoPlayerController?.dataSource
+                .toLowerCase()
+                .contains(widget.controller.url.toLowerCase()))) {
+      _setChewieController();
     }
     _initConnectivity();
 
