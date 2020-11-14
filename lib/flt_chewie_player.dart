@@ -86,7 +86,9 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
         AnimationController(vsync: this, duration: Duration(milliseconds: 333));
     _animation = Tween(begin: 1.0, end: 0.0).animate(_animationController)
       ..addListener(() {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       });
   }
 
@@ -151,7 +153,9 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
                 false) ==
             true) {
       _videoPlayerControllerInitialized = true;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 

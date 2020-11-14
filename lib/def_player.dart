@@ -171,7 +171,6 @@ class DefPlayerState extends State<DefPlayer> {
           data.startFullScreenUrl != widget.controller.url) {
         _delayDisposeController(milliseconds: 500);
       }
-      setState(() {});
     });
   }
 
@@ -292,7 +291,6 @@ class DefPlayerState extends State<DefPlayer> {
                 zoomOutPlaychewieController = null;
                 zoomOutDefPlayer = null;
                 _delayDisposeController();
-                setState(() {});
               }
             } else {
               // Future.delayed(Duration(milliseconds: 100), (() {
@@ -423,7 +421,9 @@ class DefPlayerState extends State<DefPlayer> {
       }
     }
     _videoPlayerController?.addListener(_videoPlayerControllerListener);
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   _getVideoPlayerController() async {
@@ -452,7 +452,9 @@ class DefPlayerState extends State<DefPlayer> {
     if (widget.controller.onInitializeChanged != null) {
       widget.controller.onInitializeChanged(_initializeStatus);
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     await videoPlayerController.initialize();
     _initializeStatus = InitializeStatus.complete;
     if (widget.controller?.onInitializeChanged != null) {
