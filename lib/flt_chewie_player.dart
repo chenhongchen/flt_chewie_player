@@ -260,8 +260,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
               child: Container(
                 color: Colors.black.withOpacity(0.4),
                 child: Hero(
-                  tag:
-                      'hero_chewie_${widget.controller.videoPlayerController.dataSource}',
+                  tag: widget.controller.hero,
                   child: Chewie(
                     controller: widget.controller,
                   ),
@@ -272,8 +271,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
         : Container(
             color: Colors.black,
             child: Hero(
-              tag:
-                  'hero_chewie_${widget.controller.videoPlayerController.dataSource}',
+              tag: widget.controller.hero,
               child: Chewie(
                 controller: widget.controller,
               ),
