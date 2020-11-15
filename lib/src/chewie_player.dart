@@ -134,8 +134,7 @@ class ChewieState extends State<Chewie> {
     if (widget.controller.routePageBuilder == null) {
       // chc 改 加动画
       return Hero(
-        tag:
-            'hero_chewie_${widget.controller.videoPlayerController.dataSource}',
+        tag: widget.controller.hero,
         child: _defaultRoutePageBuilder(
             context, animation, secondaryAnimation, controllerProvider),
       );
@@ -238,7 +237,9 @@ class ChewieController extends ChangeNotifier {
       DeviceOrientation.landscapeRight,
     ],
     this.routePageBuilder = null,
-  }) : assert(videoPlayerController != null,
+  })  : this.hero =
+            'hero_chewie_${videoPlayerController.dataSource}_${DateTime.now().millisecondsSinceEpoch}',
+        assert(videoPlayerController != null,
             'You must provide a controller to play a video') {
     _initialize();
   }
@@ -316,6 +317,8 @@ class ChewieController extends ChangeNotifier {
 
   /// Defines a custom RoutePageBuilder for the fullscreen
   final ChewieRoutePageBuilder routePageBuilder;
+
+  final String hero;
 
   static ChewieController of(BuildContext context) {
     final chewieControllerProvider =
@@ -414,8 +417,8 @@ class ChewieController extends ChangeNotifier {
         DefPlayerState.zoomOutPlaychewieController = null;
         DefPlayerState.needFullScreenPlayUrl = null;
         Future.delayed(Duration(seconds: 10), () {
-          videoPlayerController?.dispose();
           chewieController?.dispose();
+          videoPlayerController?.dispose();
         });
       } else {
         notifyListeners();
