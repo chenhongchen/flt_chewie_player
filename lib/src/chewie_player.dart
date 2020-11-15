@@ -403,14 +403,20 @@ class ChewieController extends ChangeNotifier {
   }
 
   _pod(BuildContext context) {
-    Navigator.of(context, rootNavigator: false).pop();
+    Navigator.of(context, rootNavigator: true).pop();
     Future.delayed(Duration(milliseconds: 500), () {
       if (DefPlayerState.zoomOutDefPlayer == null) {
+        ChewieController chewieController =
+            DefPlayerState.zoomOutPlaychewieController;
+        VideoPlayerController videoPlayerController =
+            DefPlayerState.zoomOutPlaychewieController?.videoPlayerController;
         DefPlayerState.zoomOutPlaychewieController?.pause();
-        DefPlayerState.zoomOutPlaychewieController?.videoPlayerController
-            ?.dispose();
-        DefPlayerState.zoomOutPlaychewieController?.dispose();
         DefPlayerState.zoomOutPlaychewieController = null;
+        DefPlayerState.needFullScreenPlayUrl = null;
+        Future.delayed(Duration(seconds: 10), () {
+          videoPlayerController?.dispose();
+          chewieController?.dispose();
+        });
       } else {
         notifyListeners();
       }
