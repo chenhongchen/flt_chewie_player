@@ -141,7 +141,9 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
         widget.controller.pause();
       }
       if (widget.onZoomChange != null) {
-        widget.onZoomChange(FltChewiePlayerZoom.zoomIn);
+        Future.delayed(Duration(milliseconds: 500),(){
+          widget.onZoomChange(FltChewiePlayerZoom.zoomIn);
+        });
         // zoomIn();
       }
     }

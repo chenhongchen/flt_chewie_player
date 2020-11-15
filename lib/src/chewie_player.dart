@@ -37,8 +37,6 @@ class Chewie extends StatefulWidget {
 }
 
 class ChewieState extends State<Chewie> {
-  bool _isFullScreen = false;
-
   @override
   void initState() {
     super.initState();
@@ -60,11 +58,10 @@ class ChewieState extends State<Chewie> {
   }
 
   void listener() async {
-    if (widget.controller.isFullScreen && !_isFullScreen) {
-      _isFullScreen = true;
+    if (widget.controller.isFullScreen == true) {
       await _pushFullScreenWidget(context);
-    } else if (_isFullScreen) {
-      _isFullScreen = false;
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -183,7 +180,6 @@ class ChewieState extends State<Chewie> {
     // }
 
     await Navigator.of(context, rootNavigator: true).push(route);
-    _isFullScreen = false;
     // chc 改 （注释）
     // widget.controller.exitFullScreen();
 
@@ -395,13 +391,16 @@ class ChewieController extends ChangeNotifier {
       if (orientation == 'portraitUp') {
         time = 0;
       }
+    } else {
+      SystemChrome.setPreferredOrientations(deviceOrientationsAfterFullScreen);
+      time = 500;
     }
     if (time > 0) {
       Future.delayed(Duration(milliseconds: time), () {
-        _pod(context);
+        notifyListeners();
       });
     } else {
-      _pod(context);
+      notifyListeners();
     }
   }
 
