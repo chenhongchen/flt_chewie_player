@@ -392,8 +392,11 @@ class ChewieController extends ChangeNotifier {
         time = 0;
       }
     } else {
-      SystemChrome.setPreferredOrientations(deviceOrientationsAfterFullScreen);
-      time = 500;
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      time = 700;
+      if (MediaQuery.of(context).orientation == Orientation.portrait) {
+        time = 0;
+      }
     }
     if (time > 0) {
       Future.delayed(Duration(milliseconds: time), () {
