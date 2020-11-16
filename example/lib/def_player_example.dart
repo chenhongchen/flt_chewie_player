@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flt_chewie_player/def_player.dart';
+import 'package:flutter/services.dart';
 
 class DefPlayerExample extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   bool _showPlayerWhenZoomIn = true;
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _controller = DefPlayerController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
       autoPlay: true,
@@ -105,7 +107,8 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
             width: width,
             height: height,
             controller: DefPlayerController.network(
-              'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/699197592db8b2f3f4d39fa512756fca_540x960.mp4',
+              'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/c4eb8d392e1c25a55c5e3daf04dbd32f_960x720.mp4',
+              // 'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/699197592db8b2f3f4d39fa512756fca_540x960.mp4',
               autoPlay: false,
               initMute: false,
             ),

@@ -6,6 +6,7 @@ import 'package:flt_common_views/views/alter.dart';
 import 'package:flt_hc_hub/hud/hc_activity_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flt_chewie_player/chewie.dart';
 import 'package:connectivity/connectivity.dart';
@@ -412,6 +413,7 @@ class DefPlayerState extends State<DefPlayer> {
         looping: widget.controller.looping,
         allowedScreenSleep: false,
         showControlsOnInitialize: widget.showControlsOnInitialize,
+        deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
         errorBuilder: (context, errorMessage) {
           return Center(
             child: Text(
