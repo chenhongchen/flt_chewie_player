@@ -181,7 +181,9 @@ class DefPlayerState extends State<DefPlayer> {
         zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
             .contains(widget.controller.url.toLowerCase())) {
-      zoomOutDefPlayer = null;
+      if (zoomOutDefPlayer == this) {
+        zoomOutDefPlayer = null;
+      }
       if (zoomOutPlaychewieController.isFullScreen == true) {
         return;
       }
@@ -386,6 +388,9 @@ class DefPlayerState extends State<DefPlayer> {
         zoomOutPlaychewieController.videoPlayerController?.dataSource
             .toLowerCase()
             .contains(widget.controller.url.toLowerCase())) {
+      if (zoomOutDefPlayer != null) {
+        return;
+      }
       zoomOutDefPlayer = this;
       _videoPlayerController =
           zoomOutPlaychewieController.videoPlayerController;
