@@ -165,8 +165,8 @@ class ChewieState extends State<Chewie> {
       pageBuilder: _fullScreenRoutePageBuilder,
     );
 
-    SystemChrome.setEnabledSystemUIOverlays([]);
     if (isAndroid) {
+      SystemChrome.setEnabledSystemUIOverlays([]);
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
@@ -187,10 +187,12 @@ class ChewieState extends State<Chewie> {
     // so we do not need to check Wakelock.isEnabled.
     // Wakelock.disable();
 
-    SystemChrome.setEnabledSystemUIOverlays(
-        widget.controller.systemOverlaysAfterFullScreen);
-    SystemChrome.setPreferredOrientations(
-        widget.controller.deviceOrientationsAfterFullScreen);
+    if (isAndroid) {
+      SystemChrome.setEnabledSystemUIOverlays(
+          widget.controller.systemOverlaysAfterFullScreen);
+      SystemChrome.setPreferredOrientations(
+          widget.controller.deviceOrientationsAfterFullScreen);
+    }
   }
 }
 
@@ -392,7 +394,7 @@ class ChewieController extends ChangeNotifier {
         time = 0;
       }
     } else {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      SystemChrome.setPreferredOrientations(deviceOrientationsAfterFullScreen);
       time = 700;
       if (MediaQuery.of(context).orientation == Orientation.portrait) {
         time = 0;

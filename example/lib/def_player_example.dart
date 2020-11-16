@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flt_chewie_player/def_player.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 class DefPlayerExample extends StatefulWidget {
@@ -15,7 +16,11 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   bool _showPlayerWhenZoomIn = true;
   @override
   void initState() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      }
+    });
     _controller = DefPlayerController.network(
       'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
       autoPlay: true,
