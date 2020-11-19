@@ -206,7 +206,7 @@ class DefPlayerState extends State<DefPlayer> {
     _initializeStatus = null;
   }
 
-  _delayDisposeController({int milliseconds = 10000, bool canSetState = true}) {
+  _delayDisposeController({int milliseconds = 6000, bool canSetState = true}) {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
     chewieController?.pause();

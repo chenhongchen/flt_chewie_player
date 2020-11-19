@@ -108,28 +108,39 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
             ),
           ),
           SizedBox(height: 15),
-          DefPlayer(
-            width: width,
-            height: height,
-            controller: DefPlayerController.network(
-              'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/c4eb8d392e1c25a55c5e3daf04dbd32f_960x720.mp4',
-              // 'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/699197592db8b2f3f4d39fa512756fca_540x960.mp4',
-              autoPlay: false,
-              initMute: false,
-            ),
-            showPlayerWhenZoomIn: false,
-            zoominWidgetAnimation: true,
-            blurBackground: true,
-            snapshot: false,
-            zoomInWidget: Container(
-              color: Colors.grey,
-            ),
-            playerIcon: GestureDetector(
-              onTap: _onTapPlayer,
-              child: Center(
-                child: Image.asset('images/play.png'),
+          Row(
+            children: <Widget>[
+              DefPlayer(
+                width: 60,
+                height: 60,
+                controller: DefPlayerController.network(
+                  // 'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/c4eb8d392e1c25a55c5e3daf04dbd32f_960x720.mp4',
+                  'https://qzasset.jinriaozhou.com/quanzi/2020/20201110/699197592db8b2f3f4d39fa512756fca_540x960.mp4',
+                  autoPlay: false,
+                  initMute: false,
+                ),
+                showPlayerWhenZoomIn: false,
+                zoominWidgetAnimation: true,
+                blurBackground: true,
+                snapshot: false,
+                showControlsOnInitialize: false,
+                zoomInWidget: Container(
+                  color: Colors.grey,
+                ),
+                playerIcon: GestureDetector(
+                  onTap: _onTapPlayer,
+                  child: Center(
+                    child: Image.asset('images/play.png'),
+                  ),
+                ),
               ),
-            ),
+              Expanded(
+                child: Container(
+                  height: 80,
+                  color: Colors.lightGreenAccent,
+                ),
+              )
+            ],
           ),
           SizedBox(height: 15),
           Container(

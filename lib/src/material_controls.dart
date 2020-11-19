@@ -32,6 +32,10 @@ class _MaterialControlsState extends State<MaterialControls> {
   VideoPlayerController controller;
   ChewieController chewieController;
 
+  double _width = 0;
+  double _height = 0;
+  bool _isZoomInCanShowControllers = true;
+
   @override
   Widget build(BuildContext context) {
     if (_latestValue.hasError) {
@@ -47,6 +51,21 @@ class _MaterialControlsState extends State<MaterialControls> {
                 size: 42,
               ),
             );
+    }
+
+    Future.delayed(Duration(milliseconds: 0), () {
+      _width = context.size.width;
+      _height = context.size.height;
+      // print('_width = $_width _height = $_height');
+    });
+    if (_width < 105 ||
+        _height < 85 ||
+        (_isZoomInCanShowControllers == false &&
+            chewieController.isFullScreen != true)) {
+      if (_width != 0 && _height != 0) {
+        _isZoomInCanShowControllers = false;
+      }
+      return Container();
     }
 
     return MouseRegion(
