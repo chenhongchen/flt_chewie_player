@@ -13,11 +13,13 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"zoomOut" isEqualToString:call.method]) {
         [UIResponder setUseAppRotationMethod:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FltChewiePlayerZoomOut" object:nil userInfo:nil];
         result(@{});
     }
     else if ([@"zoomIn" isEqualToString:call.method]) {
         NSString *orientation = [self getOrientation];
         [UIResponder setUseAppRotationMethod:NO];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FltChewiePlayerZoomIn" object:nil userInfo:nil];
         result(@{@"orientation" : orientation});
     }
     else {

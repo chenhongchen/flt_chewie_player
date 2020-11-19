@@ -394,6 +394,7 @@ class ChewieController extends ChangeNotifier {
         time = 0;
       }
     } else {
+      FltChewiePlayerState.zoomIn();
       SystemChrome.setPreferredOrientations(deviceOrientationsAfterFullScreen);
       time = 700;
       if (MediaQuery.of(context).orientation == Orientation.portrait) {
