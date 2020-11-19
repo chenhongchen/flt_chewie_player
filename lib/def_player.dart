@@ -191,7 +191,8 @@ class DefPlayerState extends State<DefPlayer> {
       zoomOutPlaychewieController = null;
     }
 
-    _delayDisposeController(canSetState: false);
+    // _delayDisposeController(canSetState: false);
+    _disposeController();
   }
 
   _disposeController() {
@@ -209,7 +210,7 @@ class DefPlayerState extends State<DefPlayer> {
   _delayDisposeController({int milliseconds = 6000, bool canSetState = true}) {
     var chewieController = _chewieController;
     var videoPlayerController = _videoPlayerController;
-    chewieController?.pause();
+    videoPlayerController?.pause();
     _chewieController = null;
     _videoPlayerController = null;
     if (_needFullScreenPlayUrl == widget.controller?.url) {
