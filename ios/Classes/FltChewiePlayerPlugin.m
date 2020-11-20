@@ -1,5 +1,5 @@
 #import "FltChewiePlayerPlugin.h"
-#import "UIResponder+Orientations.h"
+#import "AppDelegate+VP.h"
 
 @implementation FltChewiePlayerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -12,7 +12,7 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"zoomOut" isEqualToString:call.method]) {
-        [UIResponder setUseAppRotationMethod:YES];
+        [UIResponder setUseAppRotationMethod:YES allowRotationOrientationMask:UIInterfaceOrientationMaskAllButUpsideDown];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"FltChewiePlayerZoomOut" object:nil userInfo:nil];
         result(@{});
     }
