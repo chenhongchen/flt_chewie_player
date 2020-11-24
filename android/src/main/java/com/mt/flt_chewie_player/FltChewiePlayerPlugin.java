@@ -42,10 +42,10 @@ public class FltChewiePlayerPlugin implements FlutterPlugin, MethodCallHandler {
     if (call.method.equals("getPlatformVersion")) {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
     } else if(call.method.equals("zoomIn")){
-      PlayStatus.getInstance().setCanBackPressed(false);
+      PlayStatus.getInstance().setCanBackPressed(true);
       result.success(null);
     }else if(call.method.equals("zoomOut")){
-      PlayStatus.getInstance().setCanBackPressed(true);
+      PlayStatus.getInstance().setCanBackPressed(false);
       result.success(null);
     } else {
       result.notImplemented();
