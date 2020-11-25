@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flt_chewie_player/def_player.dart';
 import 'package:flt_chewie_player/flt_chewie_player.dart';
+import 'package:flt_chewie_player/src/chewie_full_screen_video.dart';
 import 'package:flt_chewie_player/src/chewie_progress_colors.dart';
 import 'package:flt_chewie_player/src/player_with_controls.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ typedef Widget ChewieRoutePageBuilder(
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-    _ChewieControllerProvider controllerProvider);
+    ChewieControllerProvider controllerProvider);
 
 /// A Video Player with Material and Cupertino skins.
 ///
@@ -67,7 +68,7 @@ class ChewieState extends State<Chewie> {
 
   @override
   Widget build(BuildContext context) {
-    return _ChewieControllerProvider(
+    return ChewieControllerProvider(
       controller: widget.controller,
       child: PlayerWithControls(),
     );
@@ -76,40 +77,15 @@ class ChewieState extends State<Chewie> {
   Widget _buildFullScreenVideo(
       BuildContext context,
       Animation<double> animation,
-      _ChewieControllerProvider controllerProvider) {
-    double lastDownY;
-    bool hasExit = false;
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Listener(
-        onPointerDown: (dowPointEvent) {
-          lastDownY = dowPointEvent.position.dy;
-        },
-        onPointerMove: (movePointEvent) {
-          if (hasExit == true) {
-            return;
-          }
-          var position = movePointEvent.position.dy;
-          var detal = position - lastDownY;
-          if (detal > 50) {
-            controllerProvider.controller.exitFullScreen(context);
-            hasExit = true;
-          }
-        },
-        child: Container(
-          alignment: Alignment.center,
-          color: Colors.black,
-          child: controllerProvider,
-        ),
-      ),
-    );
+      ChewieControllerProvider controllerProvider) {
+    return ChewieFullScreenVideo(controllerProvider: controllerProvider);
   }
 
   AnimatedWidget _defaultRoutePageBuilder(
       BuildContext context,
       Animation<double> animation,
       Animation<double> secondaryAnimation,
-      _ChewieControllerProvider controllerProvider) {
+      ChewieControllerProvider controllerProvider) {
     return AnimatedBuilder(
       animation: animation,
       builder: (BuildContext context, Widget child) {
@@ -123,7 +99,7 @@ class ChewieState extends State<Chewie> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    var controllerProvider = _ChewieControllerProvider(
+    var controllerProvider = ChewieControllerProvider(
       controller: widget.controller,
       child: PlayerWithControls(),
     );
@@ -320,8 +296,8 @@ class ChewieController extends ChangeNotifier {
 
   static ChewieController of(BuildContext context) {
     final chewieControllerProvider =
-        context.inheritFromWidgetOfExactType(_ChewieControllerProvider)
-            as _ChewieControllerProvider;
+        context.inheritFromWidgetOfExactType(ChewieControllerProvider)
+            as ChewieControllerProvider;
 
     return chewieControllerProvider.controller;
   }
@@ -452,8 +428,8 @@ class ChewieController extends ChangeNotifier {
   }
 }
 
-class _ChewieControllerProvider extends InheritedWidget {
-  const _ChewieControllerProvider({
+class ChewieControllerProvider extends InheritedWidget {
+  const ChewieControllerProvider({
     Key key,
     @required this.controller,
     @required Widget child,
@@ -464,6 +440,6 @@ class _ChewieControllerProvider extends InheritedWidget {
   final ChewieController controller;
 
   @override
-  bool updateShouldNotify(_ChewieControllerProvider old) =>
+  bool updateShouldNotify(ChewieControllerProvider old) =>
       controller != old.controller;
 }

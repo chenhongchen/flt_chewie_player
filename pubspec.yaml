@@ -24,6 +24,8 @@ dependencies:
   video_player: ">=0.7.0 <0.11.0"
   wakelock: ">=0.1.2 <0.2.0"
 
+  shared_preferences: ^0.5.4
+
   flt_common_views:
     git:
       url: 'http://117.41.1.11:2086/plugins/flt_common_views'
@@ -57,6 +59,7 @@ flutter:
   assets:
     - images/play.png
     - images/small_play.png
+    - images/pic_gesture.png
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
