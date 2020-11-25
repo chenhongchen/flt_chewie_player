@@ -21,13 +21,14 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   bool _showTip = true;
   final String _showTipKey = 'kCloseVideoFullScreenGestureTip';
   double _opacityLevel = 0.0;
+  int _showTipTime = 0;
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-        duration: const Duration(milliseconds: 1500), vsync: this);
+        duration: const Duration(milliseconds: 1000), vsync: this);
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         //将动画重置到开始前的状态
@@ -94,6 +95,13 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
       right: 0,
       child: GestureDetector(
         onTap: () async {
+          if (_showTip != true) {
+            return;
+          }
+          int time = DateTime.now().millisecondsSinceEpoch;
+          if (_showTipTime == 0 || (time - _showTipTime <= 1000)) {
+            return;
+          }
           _controller.stop();
           SharedPreferences sp = await SharedPreferences.getInstance();
           sp.setString(_showTipKey, '1');
@@ -106,38 +114,50 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
         },
         child: _showTip != true
             ? Container()
-            : AnimatedOpacity(
-                opacity: _opacityLevel, //设置透明度
-                duration: Duration(milliseconds: 300),
-                child: Container(
-                  child: Center(
-                    child: SlideTransition(
-                      position: _animation,
-                      child: Container(
-                        width: 200,
-                        height: 150,
+            : Stack(
+                children: <Widget>[
+                  AnimatedOpacity(
+                    opacity: _opacityLevel, //设置透明度
+                    duration: Duration(milliseconds: 300),
+                    child: Container(
+                      color: Colors.black,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  ),
+                  AnimatedOpacity(
+                    opacity: _opacityLevel > 0 ? 1 : 0, //设置透明度
+                    duration: Duration(milliseconds: 300),
+                    child: Container(
+                      child: Center(
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Image.asset(
-                              'images/pic_gesture.png',
-                              package: 'flt_chewie_player',
-                            ),
                             Text(
                               '下滑快速关闭视频',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 14,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SlideTransition(
+                              position: _animation,
+                              child: Center(
+                                child: Image.asset(
+                                  'images/pic_gesture.png',
+                                  package: 'flt_chewie_player',
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
+                      color: Colors.transparent,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
                     ),
-                  ),
-                  color: Colors.black,
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                ),
+                  )
+                ],
               ),
       ),
     );
@@ -146,10 +166,12 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   _getTipInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     _showTip = sp.getString(_showTipKey) == '1' ? false : true;
+    _showTip = true;
     await Future.delayed(Duration(milliseconds: 300), () async {
       setState(() {});
       if (_showTip == true) {
         _opacityLevel = 0.4;
+        _showTipTime = DateTime.now().millisecondsSinceEpoch;
         await Future.delayed(Duration(milliseconds: 500), () {
           _controller.forward();
           setState(() {});
