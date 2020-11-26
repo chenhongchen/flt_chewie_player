@@ -28,6 +28,24 @@ class PlayerWithControls extends StatelessWidget {
 
   Container _buildPlayerWithControls(
       ChewieController chewieController, BuildContext context) {
+    bool tbSafe = false;
+    bool lrSafe = false;
+    if (chewieController.isFullScreen == true) {
+      double sw = MediaQuery.of(context).size.width ?? 0;
+      double sh = MediaQuery.of(context).size.height ?? 0;
+      if (sw > sh) {
+        tbSafe = true;
+        lrSafe = true;
+      } else {
+        if (sw > 0 && sh > 0) {
+          double ratio = sw / sh;
+          double ratio1 = chewieController.aspectRatio;
+          if (ratio > ratio1) {
+            tbSafe = true;
+          }
+        }
+      }
+    }
     return Container(
       child: Stack(
         children: <Widget>[
@@ -40,7 +58,13 @@ class PlayerWithControls extends StatelessWidget {
             ),
           ),
           chewieController.overlay ?? Container(),
-          _buildControls(context, chewieController),
+          SafeArea(
+            left: lrSafe,
+            right: lrSafe,
+            top: tbSafe,
+            bottom: tbSafe,
+            child: _buildControls(context, chewieController),
+          ),
         ],
       ),
     );
