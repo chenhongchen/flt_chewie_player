@@ -38,9 +38,12 @@ class PlayerWithControls extends StatelessWidget {
         lrSafe = true;
       } else {
         if (sw > 0 && sh > 0) {
-          double ratio = sw / sh;
+          double ratio = sw /
+              (sh -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom);
           double ratio1 = chewieController.aspectRatio;
-          if (ratio > ratio1) {
+          if (ratio >= ratio1) {
             tbSafe = true;
           }
         }
