@@ -166,7 +166,6 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   _getTipInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     _showTip = sp.getString(_showTipKey) == '1' ? false : true;
-    _showTip = true;
     await Future.delayed(Duration(milliseconds: 300), () async {
       setState(() {});
       if (_showTip == true) {
