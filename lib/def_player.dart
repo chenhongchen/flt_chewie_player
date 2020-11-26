@@ -358,7 +358,9 @@ class DefPlayerState extends State<DefPlayer> {
             right: 0,
             top: 0,
             bottom: 0,
-            child: widget.playerIcon == null || _initializeStatus != null
+            child: widget.playerIcon == null ||
+                    (_initializeStatus != null &&
+                        widget.controller.urlType == DefPlayerUrlType.network)
                 ? Container()
                 : widget.playerIcon,
           ),
@@ -369,7 +371,8 @@ class DefPlayerState extends State<DefPlayer> {
             bottom: 0,
             child: Container(
               child: Center(
-                child: _initializeStatus == InitializeStatus.start
+                child: (_initializeStatus == InitializeStatus.start &&
+                        widget.controller.urlType == DefPlayerUrlType.network)
                     ? HCActivityIndicator(
                         color: widget.loadColor,
                       )
