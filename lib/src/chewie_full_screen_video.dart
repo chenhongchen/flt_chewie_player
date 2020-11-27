@@ -88,6 +88,7 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   }
 
   _buildCloseGesture() {
+    double lastDownY;
     return Positioned(
       top: 0,
       left: 0,
@@ -111,6 +112,31 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
             _showTip = false;
             setState(() {});
           });
+        },
+        onVerticalDragDown: (DragDownDetails details) {
+          lastDownY = details.localPosition.dy;
+        },
+        onVerticalDragUpdate: (DragUpdateDetails details) async {
+          if (_showTip != true) {
+            return;
+          }
+          var position = details.localPosition.dy;
+          var detal = position - lastDownY;
+          if (detal > 50) {
+            int time = DateTime.now().millisecondsSinceEpoch;
+            if (_showTipTime == 0 || (time - _showTipTime <= 1000)) {
+              return;
+            }
+            _controller.stop();
+            SharedPreferences sp = await SharedPreferences.getInstance();
+            sp.setString(_showTipKey, '1');
+            _opacityLevel = 0.0;
+            setState(() {});
+            Future.delayed(Duration(milliseconds: 300), () {
+              _showTip = false;
+              setState(() {});
+            });
+          }
         },
         child: _showTip != true
             ? Container()
