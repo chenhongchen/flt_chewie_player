@@ -28,11 +28,11 @@ dependencies:
 
   flt_common_views:
     git:
-      url: 'http://117.41.1.11:2086/plugins/flt_common_views'
+      url: 'http://ugitlub.com:2086/plugins/flt_common_views'
 
   flt_hc_hub:
     git:
-      url: 'http://117.41.1.11:2086/plugins/flt_hc_hub'
+      url: 'http://ugitlub.com:2086/plugins/flt_hc_hub'
 
 dev_dependencies:
   flutter_test:
