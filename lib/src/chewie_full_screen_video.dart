@@ -5,8 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ChewieFullScreenVideo extends StatefulWidget {
   final ChewieControllerProvider controllerProvider;
-  ChewieFullScreenVideo({Key key, @required this.controllerProvider})
-      : super(key: key);
+  ChewieFullScreenVideo({
+    Key? key,
+    required this.controllerProvider,
+  }) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _ChewieFullScreenVideoState();
@@ -16,8 +18,10 @@ class ChewieFullScreenVideo extends StatefulWidget {
 class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
     with TickerProviderStateMixin {
   //动画控制器
-  AnimationController _controller;
-  Animation<Offset> _animation;
+  late AnimationController _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000), vsync: this);
+  late Animation<Offset> _animation =
+      Tween(begin: Offset(0, 0), end: Offset(0, 1)).animate(_controller);
   bool _showTip = true;
   final String _showTipKey = 'kCloseVideoFullScreenGestureTip';
   double _opacityLevel = 0.0;
@@ -26,9 +30,6 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         //将动画重置到开始前的状态
@@ -37,21 +38,19 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
         _controller.forward();
       }
     });
-    _animation =
-        Tween(begin: Offset(0, 0), end: Offset(0, 1)).animate(_controller);
     _getTipInfo();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller?.dispose();
+    _controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           _buildVideo(),
@@ -62,7 +61,7 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   }
 
   Widget _buildVideo() {
-    double lastDownY;
+    double lastDownY = 0;
     bool hasExit = false;
     return Listener(
       onPointerDown: (dowPointEvent) {
@@ -88,7 +87,7 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   }
 
   _buildCloseGesture() {
-    double lastDownY;
+    double lastDownY = 0;
     return Positioned(
       top: 0,
       left: 0,
@@ -192,14 +191,18 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
   _getTipInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     _showTip = sp.getString(_showTipKey) == '1' ? false : true;
-    await Future.delayed(Duration(milliseconds: 300), () async {
-      setState(() {});
+    Future.delayed(Duration(milliseconds: 300), () async {
+      if (mounted) {
+        setState(() {});
+      }
       if (_showTip == true) {
         _opacityLevel = 0.4;
         _showTipTime = DateTime.now().millisecondsSinceEpoch;
         await Future.delayed(Duration(milliseconds: 500), () {
           _controller.forward();
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
         });
       }
     });

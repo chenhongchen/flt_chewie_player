@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
 
 typedef Widget ChewieRoutePageBuilder(
     BuildContext context,
@@ -23,10 +22,9 @@ typedef Widget ChewieRoutePageBuilder(
 /// make it easy to use!
 class Chewie extends StatefulWidget {
   Chewie({
-    Key key,
-    this.controller,
-  })  : assert(controller != null, 'You must provide a chewie controller'),
-        super(key: key);
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
   /// The [ChewieController]
   final ChewieController controller;
@@ -88,7 +86,7 @@ class ChewieState extends State<Chewie> {
       ChewieControllerProvider controllerProvider) {
     return AnimatedBuilder(
       animation: animation,
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return _buildFullScreenVideo(context, animation, controllerProvider);
       },
     );
@@ -131,7 +129,7 @@ class ChewieState extends State<Chewie> {
       // return _defaultRoutePageBuilder(
       //     context, animation, secondaryAnimation, controllerProvider);
     }
-    return widget.controller.routePageBuilder(
+    return widget.controller.routePageBuilder!(
         context, animation, secondaryAnimation, controllerProvider);
   }
 
@@ -184,7 +182,7 @@ class ChewieState extends State<Chewie> {
 /// `VideoPlayerController`.
 class ChewieController extends ChangeNotifier {
   ChewieController({
-    this.videoPlayerController,
+    required this.videoPlayerController,
     this.aspectRatio,
     this.autoInitialize = false,
     this.autoPlay = false,
@@ -210,11 +208,9 @@ class ChewieController extends ChangeNotifier {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ],
-    this.routePageBuilder = null,
-  })  : this.hero =
-            'hero_chewie_${videoPlayerController.dataSource}_${DateTime.now().millisecondsSinceEpoch}',
-        assert(videoPlayerController != null,
-            'You must provide a controller to play a video') {
+    this.routePageBuilder,
+  }) : this.hero =
+            'hero_chewie_${videoPlayerController.dataSource}_${DateTime.now().millisecondsSinceEpoch}' {
     _initialize();
   }
 
@@ -228,7 +224,7 @@ class ChewieController extends ChangeNotifier {
   final bool autoPlay;
 
   /// Start video at a certain position
-  final Duration startAt;
+  final Duration? startAt;
 
   /// Whether or not the video should loop
   final bool looping;
@@ -241,32 +237,33 @@ class ChewieController extends ChangeNotifier {
 
   /// Defines customised controls. Check [MaterialControls] or
   /// [CupertinoControls] for reference.
-  final Widget customControls;
+  final Widget? customControls;
 
   /// When the video playback runs  into an error, you can build a custom
   /// error message.
-  final Widget Function(BuildContext context, String errorMessage) errorBuilder;
+  final Widget Function(BuildContext context, String errorMessage)?
+      errorBuilder;
 
   /// The Aspect Ratio of the Video. Important to get the correct size of the
   /// video!
   ///
   /// Will fallback to fitting within the space allowed.
-  final double aspectRatio;
+  final double? aspectRatio;
 
   /// The colors to use for controls on iOS. By default, the iOS player uses
   /// colors sampled from the original iOS 11 designs.
-  final ChewieProgressColors cupertinoProgressColors;
+  final ChewieProgressColors? cupertinoProgressColors;
 
   /// The colors to use for the Material Progress Bar. By default, the Material
   /// player uses the colors from your Theme.
-  final ChewieProgressColors materialProgressColors;
+  final ChewieProgressColors? materialProgressColors;
 
   /// The placeholder is displayed underneath the Video before it is initialized
   /// or played.
-  final Widget placeholder;
+  final Widget? placeholder;
 
   /// A widget which is placed between the video and the controls
-  final Widget overlay;
+  final Widget? overlay;
 
   /// Defines if the player will start in fullscreen when play is pressed
   final bool fullScreenByDefault;
@@ -290,16 +287,15 @@ class ChewieController extends ChangeNotifier {
   final List<DeviceOrientation> deviceOrientationsAfterFullScreen;
 
   /// Defines a custom RoutePageBuilder for the fullscreen
-  final ChewieRoutePageBuilder routePageBuilder;
+  final ChewieRoutePageBuilder? routePageBuilder;
 
   final String hero;
 
-  static ChewieController of(BuildContext context) {
-    final chewieControllerProvider =
-        context.inheritFromWidgetOfExactType(ChewieControllerProvider)
-            as ChewieControllerProvider;
+  static ChewieController? of(BuildContext context) {
+    final ChewieControllerProvider? chewieControllerProvider =
+        context.dependOnInheritedWidgetOfExactType<ChewieControllerProvider>();
 
-    return chewieControllerProvider.controller;
+    return chewieControllerProvider?.controller;
   }
 
   bool _isFullScreen = false;
@@ -310,7 +306,7 @@ class ChewieController extends ChangeNotifier {
     await videoPlayerController.setLooping(looping);
 
     if ((autoInitialize || autoPlay) &&
-        !videoPlayerController.value.initialized) {
+        !videoPlayerController.value.isInitialized) {
       await videoPlayerController.initialize();
     }
 
@@ -323,7 +319,7 @@ class ChewieController extends ChangeNotifier {
     }
 
     if (startAt != null) {
-      await videoPlayerController.seekTo(startAt);
+      await videoPlayerController.seekTo(startAt!);
     }
 
     if (fullScreenByDefault) {
@@ -386,27 +382,6 @@ class ChewieController extends ChangeNotifier {
     }
   }
 
-  _pod(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
-    Future.delayed(Duration(milliseconds: 500), () {
-      if (DefPlayerState.zoomOutDefPlayer == null) {
-        ChewieController chewieController =
-            DefPlayerState.zoomOutPlaychewieController;
-        VideoPlayerController videoPlayerController =
-            DefPlayerState.zoomOutPlaychewieController?.videoPlayerController;
-        DefPlayerState.zoomOutPlaychewieController?.pause();
-        DefPlayerState.zoomOutPlaychewieController = null;
-        DefPlayerState.needFullScreenPlayUrl = null;
-        Future.delayed(Duration(seconds: 10), () {
-          chewieController?.dispose();
-          videoPlayerController?.dispose();
-        });
-      } else {
-        notifyListeners();
-      }
-    });
-  }
-
   Future<void> play() async {
     await videoPlayerController.play();
   }
@@ -430,12 +405,10 @@ class ChewieController extends ChangeNotifier {
 
 class ChewieControllerProvider extends InheritedWidget {
   const ChewieControllerProvider({
-    Key key,
-    @required this.controller,
-    @required Widget child,
-  })  : assert(controller != null),
-        assert(child != null),
-        super(key: key, child: child);
+    Key? key,
+    required this.controller,
+    required Widget child,
+  }) : super(key: key, child: child);
 
   final ChewieController controller;
 

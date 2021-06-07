@@ -23,10 +23,10 @@ enum SnapshotMode {
 
 class FltChewiePlayer extends StatefulWidget {
   FltChewiePlayer({
-    Key key,
+    Key? key,
+    this.controller,
     this.width,
     this.height,
-    this.controller,
     this.zoomInWidget,
     this.zoominWidgetAnimation = true,
     this.showPlayerWhenZoomIn = false,
@@ -39,16 +39,16 @@ class FltChewiePlayer extends StatefulWidget {
         super(key: key);
 
   /// The [ChewieController]
-  final double width;
-  final double height;
-  final ChewieController controller;
-  final Widget zoomInWidget;
+  final double? width;
+  final double? height;
+  final ChewieController? controller;
+  final Widget? zoomInWidget;
   final bool zoominWidgetAnimation;
   final bool showPlayerWhenZoomIn;
   final bool snapshot;
   final SnapshotMode snapshotMode;
   final bool blurBackground;
-  final Function(FltChewiePlayerZoom zoom) onZoomChange;
+  final Function(FltChewiePlayerZoom zoom)? onZoomChange;
 
   @override
   FltChewiePlayerState createState() {
@@ -63,9 +63,16 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   bool _videoPlayerControllerInitialized = false;
 
   //动画控制器
-  AnimationController _animationController;
-  Animation<double> _animation;
-  bool _hiddenZoomInWidget;
+  late AnimationController _animationController =
+      AnimationController(vsync: this, duration: Duration(milliseconds: 333));
+  late Animation<double> _animation =
+      Tween(begin: 1.0, end: 0.0).animate(_animationController)
+        ..addListener(() {
+          if (mounted) {
+            setState(() {});
+          }
+        });
+  bool? _hiddenZoomInWidget;
 
   static const MethodChannel _channel =
       const MethodChannel('flt_chewie_player');
@@ -82,24 +89,16 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   void initState() {
     super.initState();
     _init();
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 333));
-    _animation = Tween(begin: 1.0, end: 0.0).animate(_animationController)
-      ..addListener(() {
-        if (mounted) {
-          setState(() {});
-        }
-      });
   }
 
   @override
   void dispose() {
     if (widget.controller != null) {
-      widget.controller.removeListener(_chewieControllerListener);
-      widget.controller.videoPlayerController
+      widget.controller?.removeListener(_chewieControllerListener);
+      widget.controller?.videoPlayerController
           .removeListener(_videoPlayerControllerListener);
     }
-    _animationController?.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -113,36 +112,36 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
 
   _init() {
     if (widget.controller != null) {
-      widget.controller.addListener(_chewieControllerListener);
+      widget.controller?.addListener(_chewieControllerListener);
       if (widget.controller == DefPlayerState.zoomOutPlaychewieController) {
         _isFullScreen = true;
       }
       _videoPlayerControllerInitialized =
-          widget.controller?.videoPlayerController?.value?.initialized ?? false;
+          widget.controller!.videoPlayerController.value.isInitialized;
       if (_videoPlayerControllerInitialized == false &&
           widget.snapshot == true) {
-        widget.controller?.videoPlayerController?.initialize();
+        widget.controller!.videoPlayerController.initialize();
       }
     }
   }
 
   void _chewieControllerListener() async {
-    if (widget.controller.isFullScreen && !_isFullScreen) {
+    if (widget.controller?.isFullScreen == true && !_isFullScreen) {
       _isFullScreen = true;
       if (widget.onZoomChange != null) {
-        widget.onZoomChange(FltChewiePlayerZoom.zoomOut);
+        widget.onZoomChange!(FltChewiePlayerZoom.zoomOut);
         zoomOut();
       }
-    } else if (!widget.controller.isFullScreen && _isFullScreen) {
+    } else if (widget.controller?.isFullScreen == false && _isFullScreen) {
       _isFullScreen = false;
       if ((widget.snapshot || widget.zoomInWidget != null) &&
           widget.controller != null &&
           widget.showPlayerWhenZoomIn == false) {
-        widget.controller.pause();
+        widget.controller?.pause();
       }
       if (widget.onZoomChange != null) {
         Future.delayed(Duration(milliseconds: 500), () {
-          widget.onZoomChange(FltChewiePlayerZoom.zoomIn);
+          widget.onZoomChange!(FltChewiePlayerZoom.zoomIn);
         });
         // zoomIn();
       }
@@ -151,9 +150,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
 
   _videoPlayerControllerListener() {
     if (_videoPlayerControllerInitialized == false &&
-        (widget.controller?.videoPlayerController?.value?.initialized ??
-                false) ==
-            true) {
+        widget.controller?.videoPlayerController.value.isInitialized == true) {
       _videoPlayerControllerInitialized = true;
       if (mounted) {
         setState(() {});
@@ -165,7 +162,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   Widget build(BuildContext context) {
     if (widget.controller != null &&
         _videoPlayerControllerAddListener == false) {
-      widget.controller.videoPlayerController
+      widget.controller!.videoPlayerController
           .addListener(_videoPlayerControllerListener);
       _videoPlayerControllerAddListener = true;
     }
@@ -190,7 +187,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
               bottom: 0,
               right: 0,
               child: Offstage(
-                offstage: !(widget.showPlayerWhenZoomIn ?? false),
+                offstage: !(widget.showPlayerWhenZoomIn),
                 child: _buildChewie(),
               ),
             ),
@@ -207,7 +204,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
         child = _buildChewie();
       }
     } else if (widget.zoomInWidget != null) {
-      child = widget.zoomInWidget;
+      child = widget.zoomInWidget!;
     }
     return child;
   }
@@ -215,7 +212,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   _buildZoominWidget() {
     bool hiddenZoomInWidget = false;
     if (widget.showPlayerWhenZoomIn &&
-        widget.controller?.videoPlayerController?.value?.initialized == true) {
+        widget.controller?.videoPlayerController.value.isInitialized == true) {
       hiddenZoomInWidget = true;
     }
 
@@ -225,14 +222,14 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
         if (hiddenZoomInWidget == true) {
           _animationController.forward();
         } else {
-          _animationController?.reverse();
+          _animationController.reverse();
         }
       }
     }
 
-    return widget.zoominWidgetAnimation == true && (_animation?.value ?? 0) > 0
+    return widget.zoominWidgetAnimation == true && _animation.value > 0
         ? Opacity(
-            opacity: _animation?.value,
+            opacity: _animation.value,
             child: Container(
               child: Center(
                 child: widget.zoomInWidget,
@@ -262,9 +259,9 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
               child: Container(
                 color: Colors.black.withOpacity(0.4),
                 child: Hero(
-                  tag: widget.controller.hero,
+                  tag: widget.controller!.hero,
                   child: Chewie(
-                    controller: widget.controller,
+                    controller: widget.controller!,
                   ),
                 ),
               ),
@@ -273,24 +270,24 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
         : Container(
             color: Colors.black,
             child: Hero(
-              tag: widget.controller.hero,
+              tag: widget.controller!.hero,
               child: Chewie(
-                controller: widget.controller,
+                controller: widget.controller!,
               ),
             ),
           );
   }
 
   _buildSnapshot() {
-    var videoPlayerController = widget?.controller?.videoPlayerController;
-    bool initialized = videoPlayerController?.value?.initialized ?? false;
+    var videoPlayerController = widget.controller!.videoPlayerController;
+    bool initialized = videoPlayerController.value.isInitialized;
     if (widget.snapshot != true || initialized == false) {
       return Container(
         color: Colors.black,
       );
     }
 
-    double aspectRatio = videoPlayerController?.value?.aspectRatio ?? 1;
+    double aspectRatio = videoPlayerController.value.aspectRatio;
     Widget botWidget = Container(
       child: AspectRatio(
         aspectRatio: aspectRatio,
@@ -303,15 +300,15 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
     double right = 0;
     double bottom = 0;
     double top = 0;
-    if (widget.snapshotMode == SnapshotMode.scaleAspectFill &&
-        (widget.width ?? 0) > 0 &&
-        (widget.height ?? 0) > 0) {
+    double w = widget.width ?? 0;
+    double h = widget.height ?? 0;
+    if (widget.snapshotMode == SnapshotMode.scaleAspectFill && w > 0 && h > 0) {
       botWidget = Container();
-      if (aspectRatio > widget.width / widget.height) {
-        left = -widget.height * aspectRatio * 0.5;
+      if (aspectRatio > w / h) {
+        left = -h * aspectRatio * 0.5;
         right = left;
       } else {
-        top = -widget.width / aspectRatio * 0.5;
+        top = -w / aspectRatio * 0.5;
         bottom = top;
       }
     }
@@ -324,16 +321,14 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
             right: right,
             top: top,
             bottom: bottom,
-            child: videoPlayerController == null
-                ? Container()
-                : Container(
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: aspectRatio,
-                        child: VideoPlayer(videoPlayerController),
-                      ),
-                    ),
-                  ),
+            child: Container(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: aspectRatio,
+                  child: VideoPlayer(videoPlayerController),
+                ),
+              ),
+            ),
           ),
         ],
       ),

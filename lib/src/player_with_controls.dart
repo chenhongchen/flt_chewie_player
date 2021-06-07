@@ -8,12 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerWithControls extends StatelessWidget {
-  PlayerWithControls({Key key}) : super(key: key);
+  PlayerWithControls({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final ChewieController chewieController = ChewieController.of(context);
-
+    final ChewieController? chewieController = ChewieController.of(context);
+    if (chewieController == null) {
+      return Container();
+    }
     return Center(
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -31,8 +33,8 @@ class PlayerWithControls extends StatelessWidget {
     bool tbSafe = false;
     bool lrSafe = false;
     if (chewieController.isFullScreen == true) {
-      double sw = MediaQuery.of(context).size.width ?? 0;
-      double sh = MediaQuery.of(context).size.height ?? 0;
+      double sw = MediaQuery.of(context).size.width;
+      double sh = MediaQuery.of(context).size.height;
       if (sw > sh) {
         tbSafe = true;
         lrSafe = true;
@@ -42,8 +44,8 @@ class PlayerWithControls extends StatelessWidget {
               (sh -
                   MediaQuery.of(context).padding.top -
                   MediaQuery.of(context).padding.bottom);
-          double ratio1 = chewieController.aspectRatio;
-          if (ratio >= ratio1) {
+          double? ratio1 = chewieController.aspectRatio;
+          if (ratio >= ratio1!) {
             tbSafe = true;
           }
         }
@@ -66,14 +68,14 @@ class PlayerWithControls extends StatelessWidget {
             right: lrSafe,
             top: tbSafe,
             bottom: tbSafe,
-            child: _buildControls(context, chewieController),
+            child: _buildControls(context, chewieController)!,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildControls(
+  Widget? _buildControls(
     BuildContext context,
     ChewieController chewieController,
   ) {
