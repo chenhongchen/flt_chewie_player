@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flt_chewie_player/flt_chewie_player.dart';
 import 'package:flt_common_views/views/alter.dart';
-import 'package:flt_hc_hub/hud/hc_activity_indicator.dart';
+import 'package:flt_hc_hud/hud/hc_activity_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
