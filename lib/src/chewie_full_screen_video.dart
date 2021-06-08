@@ -193,13 +193,17 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
     SharedPreferences sp = await SharedPreferences.getInstance();
     _showTip = sp.getString(_showTipKey) == '1' ? false : true;
     await Future.delayed(Duration(milliseconds: 300), () async {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
       if (_showTip == true) {
         _opacityLevel = 0.4;
         _showTipTime = DateTime.now().millisecondsSinceEpoch;
         await Future.delayed(Duration(milliseconds: 500), () {
           _controller.forward();
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
         });
       }
     });
