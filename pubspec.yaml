@@ -16,15 +16,15 @@ dependencies:
 #  chewie: ^0.9.10
 
   # 网络监听
-  connectivity: ^0.4.4
+  connectivity: ^3.0.6
 
-  event_bus: ^1.1.0
+  event_bus: ^2.0.0
 
   cupertino_icons: ^1.0.3
-  video_player: ^2.1.1
-  wakelock: ">=0.1.2 <0.2.0"
+  video_player: ^2.1.2
+  wakelock: 0.5.2
 
-  shared_preferences: ^0.5.4
+  shared_preferences: ^2.0.6
 
   flt_common_views:
     git:

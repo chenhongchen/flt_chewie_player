@@ -59,8 +59,8 @@ class PlayerExample extends StatefulWidget {
 }
 
 class _PlayerExampleState extends State<PlayerExample> {
-  VideoPlayerController _videoPlayerController;
-  ChewieController _chewieController;
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
   bool _showPlayerWhenZoomIn = false;
 
   @override
@@ -95,7 +95,7 @@ class _PlayerExampleState extends State<PlayerExample> {
           onZoomChange: (value) async {
             if (value == FltChewiePlayerZoom.zoomIn &&
                 _showPlayerWhenZoomIn == false) {
-              _chewieController.seekTo(Duration(seconds: 0));
+              _chewieController?.seekTo(Duration(seconds: 0));
             }
           },
         ),
@@ -172,11 +172,11 @@ class _PlayerExampleState extends State<PlayerExample> {
     if (_videoPlayerController == null) {
       _videoPlayerController = VideoPlayerController.network(
           'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4');
-      await _videoPlayerController.initialize();
+      await _videoPlayerController!.initialize();
     }
     _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      aspectRatio: _videoPlayerController.value.aspectRatio,
+      videoPlayerController: _videoPlayerController!,
+      aspectRatio: _videoPlayerController!.value.aspectRatio,
       autoPlay: true,
       looping: true,
     );
@@ -184,19 +184,19 @@ class _PlayerExampleState extends State<PlayerExample> {
 
     if (defFullScreen == true) {
       Future.delayed(Duration(milliseconds: 100), () {
-        _chewieController.enterFullScreen();
+        _chewieController!.enterFullScreen();
       });
     }
   }
 
   _disposePlayer() {
     if (_videoPlayerController != null) {
-      _videoPlayerController.pause();
-      _videoPlayerController.dispose();
+      _videoPlayerController!.pause();
+      _videoPlayerController!.dispose();
       _videoPlayerController = null;
     }
     if (_chewieController != null) {
-      _chewieController.dispose();
+      _chewieController!.dispose();
       _chewieController = null;
     }
   }
