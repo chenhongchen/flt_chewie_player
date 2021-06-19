@@ -200,7 +200,6 @@ class _ChewieFullScreenVideoState extends State<ChewieFullScreenVideo>
         _opacityLevel = 0.4;
         _showTipTime = DateTime.now().millisecondsSinceEpoch;
         await Future.delayed(Duration(milliseconds: 500), () {
-          _controller.forward();
           if (mounted) {
             setState(() {});
           }
