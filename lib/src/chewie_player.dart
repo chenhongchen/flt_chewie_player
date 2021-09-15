@@ -210,7 +210,7 @@ class ChewieController extends ChangeNotifier {
     ],
     this.routePageBuilder,
   }) : this.hero =
-            'hero_chewie_${videoPlayerController.dataSource}_${DateTime.now().millisecondsSinceEpoch}' {
+            'hero_chewie_${videoPlayerController.dataSource}_${DateTime.now().microsecondsSinceEpoch}' {
     _initialize();
   }
 
