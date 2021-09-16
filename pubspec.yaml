@@ -34,7 +34,7 @@ dependencies:
   flt_hc_hud:
     git:
       url: 'http://ugitlab.com:2086/plugins/flt_hc_hud'
-      ref: 'f2.2'
+      ref: 'f2.2_1'
 
 dev_dependencies:
   flutter_test:
