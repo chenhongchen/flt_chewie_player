@@ -100,6 +100,7 @@ class DefPlayer extends StatefulWidget {
   final Color loadColor;
   final bool snapshot;
   final bool showControlsOnInitialize;
+  final Function(FltChewiePlayerZoom zoom) onZoomChange;
   DefPlayer({
     Key key,
     this.controller,
@@ -116,6 +117,7 @@ class DefPlayer extends StatefulWidget {
     this.loadColor = CupertinoColors.inactiveGray,
     this.snapshot = true,
     this.showControlsOnInitialize = false,
+    this.onZoomChange,
   })  : assert(controller != null, 'You must provide a DefPlayerController'),
         super(key: key);
   @override
@@ -309,6 +311,9 @@ class DefPlayerState extends State<DefPlayer> {
               } else {
                 zoomOutPlaychewieController = _chewieController;
                 zoomOutDefPlayer = this;
+              }
+              if (widget.onZoomChange != null) {
+                widget.onZoomChange(value);
               }
             });
   }
