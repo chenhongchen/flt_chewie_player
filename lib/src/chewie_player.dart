@@ -211,12 +211,15 @@ class ChewieController extends ChangeNotifier {
       DeviceOrientation.landscapeRight,
     ],
     this.routePageBuilder = null,
+    this.sendZoomNotice = true,
   })  : this.hero =
             'hero_chewie_${videoPlayerController.dataSource}_${DateTime.now().millisecondsSinceEpoch}',
         assert(videoPlayerController != null,
             'You must provide a controller to play a video') {
     _initialize();
   }
+
+  final bool sendZoomNotice;
 
   /// The controller for the video you want to play
   final VideoPlayerController videoPlayerController;
@@ -363,14 +366,15 @@ class ChewieController extends ChangeNotifier {
     bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     int time = 0;
     if (isIOS == true) {
-      Map map = await FltChewiePlayerState.zoomIn();
+      Map map =
+          await FltChewiePlayerState.zoomIn(sendZoomNotice: sendZoomNotice);
       String orientation = map['orientation'];
       time = 700;
       if (orientation == 'portraitUp') {
         time = 0;
       }
     } else {
-      FltChewiePlayerState.zoomIn();
+      FltChewiePlayerState.zoomIn(sendZoomNotice: sendZoomNotice);
       SystemChrome.setPreferredOrientations(deviceOrientationsAfterFullScreen);
       time = 700;
       if (MediaQuery.of(context).orientation == Orientation.portrait) {
