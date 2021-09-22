@@ -101,6 +101,7 @@ class DefPlayer extends StatefulWidget {
   final bool snapshot;
   final bool showControlsOnInitialize;
   final Function(FltChewiePlayerZoom zoom)? onZoomChange;
+  final bool sendZoomNotice;
   DefPlayer({
     Key? key,
     required this.controller,
@@ -118,7 +119,9 @@ class DefPlayer extends StatefulWidget {
     this.snapshot = true,
     this.showControlsOnInitialize = false,
     this.onZoomChange,
+    this.sendZoomNotice = true,
   }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return DefPlayerState();
@@ -427,6 +430,7 @@ class DefPlayerState extends State<DefPlayer> {
             ),
           );
         },
+        sendZoomNotice: widget.sendZoomNotice,
       );
       if (widget.controller.initMute == true) {
         _chewieController!.setVolume(0);

@@ -77,12 +77,14 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
   static const MethodChannel _channel =
       const MethodChannel('flt_chewie_player');
 
-  static Future<dynamic> zoomOut() async {
-    return await _channel.invokeMethod('zoomOut');
+  static Future<dynamic> zoomOut({bool sendZoomNotice = true}) async {
+    return await _channel
+        .invokeMethod('zoomOut', {'sendZoomNotice': sendZoomNotice});
   }
 
-  static Future<dynamic> zoomIn() async {
-    return await _channel.invokeMethod('zoomIn');
+  static Future<dynamic> zoomIn({bool sendZoomNotice = true}) async {
+    return await _channel
+        .invokeMethod('zoomIn', {'sendZoomNotice': sendZoomNotice});
   }
 
   @override
@@ -130,7 +132,7 @@ class FltChewiePlayerState extends State<FltChewiePlayer>
       _isFullScreen = true;
       if (widget.onZoomChange != null) {
         widget.onZoomChange!(FltChewiePlayerZoom.zoomOut);
-        zoomOut();
+        zoomOut(sendZoomNotice: widget.controller?.sendZoomNotice ?? true);
       }
     } else if (widget.controller?.isFullScreen == false && _isFullScreen) {
       _isFullScreen = false;
