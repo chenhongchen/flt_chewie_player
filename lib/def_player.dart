@@ -7,9 +7,7 @@ import 'package:flt_hc_hud/hud/hc_activity_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:video_player/video_player.dart';
-import 'package:flt_chewie_player/chewie.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -18,6 +16,7 @@ var defPlayerEventBus = EventBus();
 class DefPlayerEventBusEvent {
   final bool? stopAllDefPlayer;
   final String? startFullScreenUrl;
+
   DefPlayerEventBusEvent({this.stopAllDefPlayer, this.startFullScreenUrl});
 }
 
@@ -45,6 +44,7 @@ class DefPlayerController {
   final bool initMute;
   final Function(VideoPlayerValue value)? onValueChanged;
   final Function(InitializeStatus status)? onInitializeChanged;
+
   DefPlayerController.file(
     this.url, {
     this.looping = true,
@@ -53,6 +53,7 @@ class DefPlayerController {
     this.onValueChanged,
     this.onInitializeChanged,
   }) : urlType = DefPlayerUrlType.file;
+
   DefPlayerController.network(
     this.url, {
     this.looping = true,
@@ -102,6 +103,7 @@ class DefPlayer extends StatefulWidget {
   final bool showControlsOnInitialize;
   final Function(FltChewiePlayerZoom zoom)? onZoomChange;
   final bool sendZoomNotice;
+
   DefPlayer({
     Key? key,
     required this.controller,
@@ -143,6 +145,7 @@ class DefPlayerState extends State<DefPlayer> {
   InitializeStatus? _initializeStatus;
 
   static String? _needFullScreenPlayUrl;
+
   static set needFullScreenPlayUrl(newValue) {
     _needFullScreenPlayUrl = newValue;
     defPlayerEventBus.fire(DefPlayerEventBusEvent());
