@@ -16,7 +16,7 @@ class _DefPlayerExampleState extends State<DefPlayerExample> {
   bool _showPlayerWhenZoomIn = true;
   @override
   void initState() {
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       if (Theme.of(context).platform == TargetPlatform.android) {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
       }

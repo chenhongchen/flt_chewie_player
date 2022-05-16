@@ -29,7 +29,7 @@ dependencies:
   flt_common_views:
     git:
       url: 'http://ugitlab.com:2086/plugins/flt_common_views'
-      ref: 'f2.2'
+      ref: 'f3.0'
 
   flt_hc_hud:
     git:
